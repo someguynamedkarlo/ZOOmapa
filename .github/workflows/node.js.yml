@@ -1,0 +1,40 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install --save-dev @types/node
+
+      # Step 4: Build the project
+      - name: Build the project
+        env:
+          VITE_BASE: /ZOOmapa/ # Replace "ZOOmapa" with your repo name if it's different
+        run: npm run build
+
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_dir: ./dist
+          personal_token: ${{ secrets.GH_TOKEN }}
+          destination_branch: gh-pages # Optional; defaults to gh-pages
