@@ -48,3 +48,9 @@ svg {
 .dropdown-container {
   z-index: 1000000;
 }
+@media screen and (max-width: 768px) {
+  .dropdown-container {
+    z-index: 1000000;
+    margin-bottom: 10px;
+  }
+}
