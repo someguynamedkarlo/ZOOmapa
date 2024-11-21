@@ -99,7 +99,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       return true;
     });
 
-  const displayedData = searchTerm ? filteredData.slice(0, 5) : filteredData;
+  const displayedData = searchTerm ? filteredData.slice(0, 10) : filteredData;
 
   return (
     <MapContainer
