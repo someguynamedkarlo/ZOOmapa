@@ -4,7 +4,12 @@ import L from "leaflet";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get } from "firebase/database";
 import MarkerClusterGroup from "react-leaflet-cluster";
-
+import psihoslik from "./icons/psiho.png";
+import prevencijaslik from "./icons/prevencija.png";
+import domslik from "./icons/dom.jpg";
+import bolnicaslik from "./icons/bolnica.png";
+import ljekarnaslik from "./icons/ljekarna.png";
+import polislik from "./icons/poli.png";
 const firebaseConfig = {
   apiKey: "AIzaSyB0xVPcTwZb5vYCZZKYPr8uimM8nKxM900",
   authDomain: "mapa-fe85d.firebaseapp.com",
@@ -65,12 +70,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
   };
 
   const iconMapping: { [key: number]: string } = {
-    1: "https://i.imgur.com/9fP8Ot2.png", // Bolnice
-    2: "https://i.imgur.com/oLSdHCb.png", // Domovi zdravlja
-    3: "https://i.imgur.com/zPPS039.png", // Ljekarne
-    4: "https://i.imgur.com/DdQi5p2.png", // Poliklinike
-    5: "https://i.imgur.com/VSY8Ca9.png", // Prevencija ovisnosti
-    6: "https://i.imgur.com/V5NaCqC.png", // Psiholozi
+    1: bolnicaslik,
+    2: domslik,
+    3: ljekarnaslik, // TOD
+    4: polislik, // TOD
+    5: prevencijaslik,
+    6: psihoslik,
   };
 
   // Filter based on selected filters
@@ -101,7 +106,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       style={{ height: "92%", width: "100%" }}
       center={[45.32560918851513, 14.44176433327116]}
       zoom={14}
-      minZoom={12}
+      minZoom={11}
       scrollWheelZoom={true}
     >
       <TileLayer
@@ -116,7 +121,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             icon={L.icon({
               iconUrl:
                 iconMapping[location.Type] || "https://i.imgur.com/9fP8Ot2.png",
-              iconSize: [90, 90],
+              iconSize: [40, 40],
             })}
           >
             <Popup>
@@ -125,9 +130,25 @@ const MapComponent: React.FC<MapComponentProps> = ({
               <br />
               {location.kontakt || "Kontakt nije dostupan"}
               <br />
-              <a href={location.mapslink}>Otvori na Google kartama</a>
+              <a
+                href={location.mapslink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Otvori na Google kartama
+              </a>
               <br />
-              <a href={location.web}>Otvori web strancu</a>
+              {location.web ? (
+                <a
+                  href={`https://${location.web}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Otvori web stranicu
+                </a>
+              ) : (
+                "Web stranica nije dostupna :("
+              )}
             </Popup>
           </Marker>
         ))}
