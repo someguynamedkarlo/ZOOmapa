@@ -16,7 +16,7 @@ const firebaseConfig = {
   appId: "1:1061731964525:web:7b1aecf2d5c3a04caad164",
   measurementId: "G-63RZV3H9KB",
 };
-
+const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -105,8 +105,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
       scrollWheelZoom={true}
     >
       <TileLayer
-        url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
+        attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
       />
       <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={true}>
         {displayedData.map((location, index) => (
