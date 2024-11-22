@@ -25,6 +25,7 @@ body {
 }
 
 .gore {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,4 +54,39 @@ svg {
     z-index: 1000000;
     margin-bottom: 10px;
   }
+}
+
+.search-results {
+  top: 60%;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  z-index: 1090;
+  position: absolute;
+}
+.search-result {
+  margin: 4px 0 0 0;
+}
+.search-result {
+  padding: 8px;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.search-result:last-child {
+  border-bottom: none;
+}
+
+/* Hover effect for search result items */
+.search-result:hover {
+  background-color: #f1f1f1;
 }

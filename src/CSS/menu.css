@@ -16,6 +16,7 @@
   display: flex;
   justify-content: space-between; /* Align text and icon */
   align-items: center;
+  z-index: 100;
 }
 
 /* Dropdown menu styling */
@@ -30,7 +31,7 @@
   max-height: 300px;
   overflow-y: auto; /* Allow scrolling if needed */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000; /* Ensure it is above other content */
+  z-index: 100; /* Ensure it is above other content */
 }
 
 /* Dropdown option styling */
@@ -39,6 +40,7 @@
   align-items: center;
   padding: 5px 10px; /* Reduced padding for compactness */
   cursor: pointer;
+  z-index: 100;
 }
 
 /* Hover effect for options */

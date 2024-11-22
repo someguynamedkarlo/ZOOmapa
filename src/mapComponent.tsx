@@ -5,8 +5,8 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get } from "firebase/database";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import psihoslik from "./icons/psiho.png";
-import prevencijaslik from "./icons/prevencija.png";
-import domslik from "./icons/dom.jpg";
+import prevencijaslik from "./icons/prevencija2.png";
+import domslik from "./icons/dom3.png";
 import bolnicaslik from "./icons/bolnica.png";
 import ljekarnaslik from "./icons/ljekarna.png";
 import polislik from "./icons/poli.png";
@@ -96,11 +96,20 @@ const MapComponent: React.FC<MapComponentProps> = ({
       if (searchTerm) {
         return location.Name.toLowerCase().includes(searchTerm.toLowerCase());
       }
+
       return true;
     });
 
   const displayedData = searchTerm ? filteredData.slice(0, 10) : filteredData;
 
+  useEffect(() => {
+    const loadData = async () => {
+      const fetchedData = await fetchData();
+      setData(fetchedData);
+      // You can send this data to App.tsx if needed
+    };
+    loadData();
+  }, []);
   return (
     <MapContainer
       style={{ height: "92%", width: "100%" }}

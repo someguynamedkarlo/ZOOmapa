@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./menu.css";
+import "./CSS/menu.css";
 
 interface DropdownProps {
   onFilterChange: (filters: string[]) => void;
