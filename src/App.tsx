@@ -37,7 +37,9 @@ function App() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-
+  const resetSearch = () => {
+    setSearchTerm("");
+  };
   const updateFilteredMatches = () => {
     if (!searchTerm.trim()) {
       setFilteredMatches([]); // Clear results if searchTerm is empty
@@ -70,7 +72,8 @@ function App() {
   }, [data, selectedFilters, searchTerm]);
 
   const handleSearchResultClick = (lat: number, lng: number) => {
-    setMapCenter([lat, lng]); // Update map center when search result is clicked
+    setMapCenter([lat, lng]);
+    resetSearch(); // Update map center when search result is clicked
   };
 
   return (
