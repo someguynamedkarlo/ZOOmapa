@@ -16,6 +16,7 @@ interface MapComponentProps {
   selectedFilters: string[];
   searchTerm: string;
   mapCenter: [number, number]; // Add mapCenter prop
+  // Add handler for search result click
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -25,6 +26,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
 }) => {
   const [data, setData] = useState<any[]>([]);
   const mapRef = useRef<L.Map | null>(null); // Reference to Leaflet map instance
+  const markersRef = useRef<any[]>([]); // Store refs for markers
 
   useEffect(() => {
     const loadData = async () => {
@@ -82,6 +84,26 @@ const MapComponent: React.FC<MapComponentProps> = ({
     }
   }, [mapCenter]);
 
+  // Handle marker click to open popup and center map
+  const handleMarkerClick = (lat: number, lng: number, index: number) => {
+    if (mapRef.current) {
+      mapRef.current.setView(new L.LatLng(lat, lng), 17); // Zoom to the clicked marker
+      markersRef.current[index].openPopup(); // Open the marker's popup
+    }
+  };
+
+  // Handle search result click to center the map and open the corresponding marker's popup
+  useEffect(() => {
+    if (mapCenter) {
+      const matchingMarkerIndex = displayedData.findIndex(
+        (location) => location.Y === mapCenter[0] && location.X === mapCenter[1]
+      );
+      if (matchingMarkerIndex !== -1) {
+        markersRef.current[matchingMarkerIndex]?.openPopup(); // Open popup for the matching marker
+      }
+    }
+  }, [mapCenter, displayedData]);
+
   return (
     <MapContainer
       style={{ height: "92%", width: "100%" }}
@@ -105,6 +127,10 @@ const MapComponent: React.FC<MapComponentProps> = ({
                 iconMapping[location.Type] || "https://i.imgur.com/9fP8Ot2.png",
               iconSize: [40, 40],
             })}
+            eventHandlers={{
+              click: () => handleMarkerClick(location.Y, location.X, index),
+            }}
+            ref={(el) => (markersRef.current[index] = el)} // Save the marker reference
           >
             <Popup>
               <h4>{location.Name}</h4>
