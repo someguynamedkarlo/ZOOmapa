@@ -4,12 +4,12 @@ import L from "leaflet";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get } from "firebase/database";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import psihoslik from "./icons/psiho.png";
-import prevencijaslik from "./icons/prevencija2.png";
-import domslik from "./icons/dom3.png";
-import bolnicaslik from "./icons/bolnica.png";
-import ljekarnaslik from "./icons/ljekarna.png";
-import polislik from "./icons/poli.png";
+import psihoslik from "./icons/psiho.webp";
+import prevencijaslik from "./icons/prevencija2.webp";
+import domslik from "./icons/dom3.webp";
+import bolnicaslik from "./icons/bolnica.webp";
+import ljekarnaslik from "./icons/ljekarna.webp";
+import polislik from "./icons/poli.webp";
 const firebaseConfig = {
   apiKey: "AIzaSyB0xVPcTwZb5vYCZZKYPr8uimM8nKxM900",
   authDomain: "mapa-fe85d.firebaseapp.com",
