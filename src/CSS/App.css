@@ -57,7 +57,7 @@ svg {
 }
 
 .search-results {
-  top: 60%;
+  top: 70%;
   width: 100%;
   max-width: 400px;
   margin-top: 10px;
@@ -88,5 +88,5 @@ svg {
 
 /* Hover effect for search result items */
 .search-result:hover {
-  background-color: #f1f1f1;
+  background-color: #f1f1f15a;
 }

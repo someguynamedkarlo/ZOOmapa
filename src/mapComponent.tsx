@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get } from "firebase/database";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import psihoslik from "./icons/psiho.webp";
 import prevencijaslik from "./icons/prevencija2.webp";
@@ -10,47 +8,23 @@ import domslik from "./icons/dom3.webp";
 import bolnicaslik from "./icons/bolnica.webp";
 import ljekarnaslik from "./icons/ljekarna.webp";
 import polislik from "./icons/poli.webp";
-const firebaseConfig = {
-  apiKey: "AIzaSyB0xVPcTwZb5vYCZZKYPr8uimM8nKxM900",
-  authDomain: "mapa-fe85d.firebaseapp.com",
-  databaseURL:
-    "https://mapa-fe85d-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "mapa-fe85d",
-  storageBucket: "mapa-fe85d.firebasestorage.app",
-  messagingSenderId: "1061731964525",
-  appId: "1:1061731964525:web:7b1aecf2d5c3a04caad164",
-  measurementId: "G-63RZV3H9KB",
-};
-const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+import fetchData from "./firebase";
 
-const fetchData = async () => {
-  const dbRef = ref(db, "/");
-  try {
-    const snapshot = await get(dbRef);
-    if (snapshot.exists()) {
-      return snapshot.val();
-    } else {
-      console.log("No data available");
-      return [];
-    }
-  } catch (error) {
-    console.error("Error reading data:", error);
-    return [];
-  }
-};
+const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 
 interface MapComponentProps {
   selectedFilters: string[];
   searchTerm: string;
+  mapCenter: [number, number]; // Add mapCenter prop
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
   selectedFilters,
   searchTerm,
+  mapCenter,
 }) => {
   const [data, setData] = useState<any[]>([]);
+  const mapRef = useRef<L.Map | null>(null); // Reference to Leaflet map instance
 
   useEffect(() => {
     const loadData = async () => {
@@ -72,13 +46,12 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const iconMapping: { [key: number]: string } = {
     1: bolnicaslik,
     2: domslik,
-    3: ljekarnaslik, // TOD
-    4: polislik, // TOD
+    3: ljekarnaslik,
+    4: polislik,
     5: prevencijaslik,
     6: psihoslik,
   };
 
-  // Filter based on selected filters
   const filteredData = data
     .filter((location) => {
       const matchesPay =
@@ -93,30 +66,30 @@ const MapComponent: React.FC<MapComponentProps> = ({
       return matchesPay || matchesType || selectedFilters.length === 0;
     })
     .filter((location) => {
-      if (searchTerm) {
+      // Only filter by searchTerm if it's not empty, otherwise include all results
+      if (searchTerm.trim() !== "") {
         return location.Name.toLowerCase().includes(searchTerm.toLowerCase());
       }
-
-      return true;
+      return true; // Return true to include all locations if searchTerm is empty
     });
 
   const displayedData = searchTerm ? filteredData.slice(0, 10) : filteredData;
 
+  // Recenter map and zoom when mapCenter changes
   useEffect(() => {
-    const loadData = async () => {
-      const fetchedData = await fetchData();
-      setData(fetchedData);
-      // You can send this data to App.tsx if needed
-    };
-    loadData();
-  }, []);
+    if (mapRef.current) {
+      mapRef.current.setView(new L.LatLng(mapCenter[0], mapCenter[1]), 17); // Adjust zoom level to 17
+    }
+  }, [mapCenter]);
+
   return (
     <MapContainer
       style={{ height: "92%", width: "100%" }}
-      center={[45.32560918851513, 14.44176433327116]}
+      center={[45.32560918851513, 14.44176433327116]} // Default center
       zoom={14}
       minZoom={11}
       scrollWheelZoom={true}
+      ref={mapRef}
     >
       <TileLayer
         url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}

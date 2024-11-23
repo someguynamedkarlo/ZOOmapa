@@ -2,44 +2,33 @@ import { useState, useEffect } from "react";
 import "./CSS/App.css";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
 import MapComponent from "./mapComponent";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get } from "firebase/database";
+import fetchData from "./firebase";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB0xVPcTwZb5vYCZZKYPr8uimM8nKxM900",
-  authDomain: "mapa-fe85d.firebaseapp.com",
-  databaseURL:
-    "https://mapa-fe85d-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "mapa-fe85d",
-  storageBucket: "mapa-fe85d.firebasestorage.app",
-  messagingSenderId: "1061731964525",
-  appId: "1:1061731964525:web:7b1aecf2d5c3a04caad164",
-  measurementId: "G-63RZV3H9KB",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const fetchData = async () => {
-  const dbRef = ref(db, "/");
-  try {
-    const snapshot = await get(dbRef);
-    if (snapshot.exists()) {
-      return snapshot.val();
-    } else {
-      console.log("No data available");
-      return [];
-    }
-  } catch (error) {
-    console.error("Error reading data:", error);
-    return [];
-  }
-};
 function App() {
+  const serviceMapping: { [key: string]: number } = {
+    "Domovi zdravlja": 2,
+    Bolnice: 1,
+    Ljekarne: 3,
+    Poliklinike: 4,
+    "Prevencija ovisnosti": 5,
+    Psiholozi: 6,
+  };
+
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [data, setData] = useState<any[]>([]); // Holds the raw data
-  const [filteredData, setFilteredData] = useState<any[]>([]); // Holds the filtered data
+  const [mapCenter, setMapCenter] = useState<[number, number]>([
+    45.32560918851513, 14.44176433327116,
+  ]);
+  const [filteredMatches, setFilteredMatches] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([]); // Store fetched data
+
+  useEffect(() => {
+    const loadData = async () => {
+      const fetchedData = await fetchData();
+      setData(fetchedData);
+    };
+    loadData();
+  }, []);
 
   const handleFilterChange = (filters: string[]) => {
     setSelectedFilters(filters);
@@ -48,55 +37,46 @@ function App() {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-  // Fetch data from Firebase when the component mounts
-  useEffect(() => {
-    const loadData = async () => {
-      const fetchedData = await fetchData();
-      setData(fetchedData);
-    };
 
-    loadData();
-  }, []);
+  const updateFilteredMatches = () => {
+    if (!searchTerm.trim()) {
+      setFilteredMatches([]); // Clear results if searchTerm is empty
+      return;
+    }
 
-  // Filter the data whenever selectedFilters or searchTerm changes
-  useEffect(() => {
-    const filtered = data
+    const filteredData = data
       .filter((location) => {
-        // Filter by selected filters
         const matchesPay =
           (selectedFilters.includes("Besplatne usluge") &&
             location.Pay === 0) ||
           (selectedFilters.includes("Usluge s naplatom") && location.Pay === 1);
 
         const matchesType = selectedFilters.some((filter) => {
-          const serviceMapping: { [key: string]: number } = {
-            "Domovi zdravlja": 2,
-            Bolnice: 1,
-            Ljekarne: 3,
-            Poliklinike: 4,
-            "Prevencija ovisnosti": 5,
-            Psiholozi: 6,
-          };
-
           const typeMatch = serviceMapping[filter];
           return typeMatch === location.Type;
         });
 
         return matchesPay || matchesType || selectedFilters.length === 0;
       })
-      .filter((location) => {
-        // Filter by search term
-        if (searchTerm) {
-          return location.Name.toLowerCase().includes(searchTerm.toLowerCase());
-        }
-        return true;
-      });
+      .filter((location) =>
+        location.Name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
-    setFilteredData(filtered);
-  }, [data, selectedFilters, searchTerm]); // Run whenever data, selectedFilters, or searchTerm changes
+    setFilteredMatches(filteredData);
+  };
+
+  useEffect(() => {
+    updateFilteredMatches(); // Update filtered matches whenever data, filters, or searchTerm changes
+  }, [data, selectedFilters, searchTerm]);
+
+  const handleSearchResultClick = (lat: number, lng: number) => {
+    setMapCenter([lat, lng]); // Update map center when search result is clicked
+  };
 
   return (
-    <>
+    <div style={{ height: "100%" }}>
+      {" "}
+      {/* Ensuring the parent div takes full height */}
       <div className="gore">
         <input
           type="text"
@@ -106,18 +86,28 @@ function App() {
           onChange={handleSearchChange}
         />
         <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
-        {searchTerm && (
+        {filteredMatches.length > 0 && (
           <div className="search-results">
-            {filteredData.slice(0, 5).map((match) => (
-              <label key={match.id} className="search-result">
-                {match.Name}
-              </label>
-            ))}
+            <div>
+              {filteredMatches.slice(0, 5).map((result, index) => (
+                <div
+                  key={index}
+                  className="search-result"
+                  onClick={() => handleSearchResultClick(result.Y, result.X)}
+                >
+                  {result.Name}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
-      <MapComponent selectedFilters={selectedFilters} searchTerm={searchTerm} />{" "}
-    </>
+      <MapComponent
+        selectedFilters={selectedFilters}
+        searchTerm={searchTerm}
+        mapCenter={mapCenter}
+      />
+    </div>
   );
 }
 
