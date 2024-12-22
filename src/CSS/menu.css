@@ -1,3 +1,15 @@
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css);
+/* Container for dropdown */
+
+/* Collapse indicator for categories */
+.category-icon {
+  transition: transform 0.2s ease;
+}
+
+.category-icon.open {
+  transform: rotate(180deg);
+}
+
 /* Container for dropdown */
 .dropdown-container {
   position: relative;
@@ -7,57 +19,119 @@
 /* Button styling */
 .dropdown-button {
   padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #0e0e0e;
   font-size: 14px;
+  color: white;
   cursor: pointer;
   width: 200px;
   display: flex;
-  justify-content: space-between; /* Align text and icon */
+  justify-content: space-between;
   align-items: center;
   z-index: 100;
 }
 
 /* Dropdown menu styling */
 .dropdown-menu {
+  display: none;
   position: absolute;
-  top: 100%; /* Position below the button */
-  right: 0; /* Align to the right */
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 200px; /* Keep the width consistent */
-  max-height: 300px;
-  overflow-y: auto; /* Allow scrolling if needed */
+  top: 100%;
+  right: 0;
+  background-color: #0e0e0e;
+  width: 300px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  z-index: 100; /* Ensure it is above other content */
+  z-index: 100;
+  margin-top: 8px;
+}
+
+/* Show dropdown menu when toggled */
+.dropdown-menu.show {
+  display: block;
 }
 
 /* Dropdown option styling */
 .dropdown-option {
-  display: flex;
-  align-items: center;
-  padding: 5px 10px; /* Reduced padding for compactness */
+  padding: 5px 10px;
   cursor: pointer;
   z-index: 100;
 }
 
 /* Hover effect for options */
 .dropdown-option:hover {
-  background-color: #f0f0f0;
+  background-color: #0e0e0e;
 }
 
-/* Checkbox styling */
-.dropdown-option input[type="checkbox"] {
-  transform: scale(0.8); /* Smaller checkboxes */
-  margin-right: 8px;
-  margin-left: 0px; /* Add space between checkbox and label */
-  width: 1rem;
+/* Collapsible category styling */
+.category-header {
+  background-color: #0e0e0e;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 5px;
+  margin-bottom: 5px;
 }
 
-/* Label styling */
-.dropdown-option label {
-  font-size: 14px; /* Adjust font size */
-  color: black;
+/* Collapse indicator for categories */
+.category-icon {
+  transition: transform 0.2s ease;
+}
+
+.category-icon.open {
+  transform: rotate(180deg);
+}
+
+.filter-container {
+  position: absolute;
+  top: 100%;
+  right: 50%;
+  background-color: #0e0e0e;
+  width: 320px;
+  max-height: 500px;
+  overflow-y: auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.filter-section {
+  margin-bottom: 1rem;
+}
+
+.filter-apply-button {
+  margin-top: 1rem;
+  background-color: #4caf50;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.filter-apply-button:hover {
+  background-color: #45a049;
+}
+
+.checkbox {
+  font-family: "FontAwesome";
+  content: "\f00c";
+  font-size: 15px;
+  color: #0e0e0e !important;
+  display: inline-block; /* Changed to inline-block */
+  width: 15px;
+  height: 15px;
+  border: 3px solid #383838;
+  margin-right: 7px;
+}
+
+.filter-options {
+  display: flex; /* Added this rule for inline checkboxes */
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-option {
+  font-weight: 300;
 }

@@ -2,57 +2,135 @@ import { useState } from "react";
 import "./CSS/menu.css";
 
 interface DropdownProps {
-  onFilterChange: (filters: string[]) => void;
+  onFilterChange: (filters: { [key: string]: string[] }) => void;
 }
 
+const filterData = [
+  {
+    category: "Lokacije",
+    options: [
+      "Zdravstveno osiguranje",
+      "Usluge (specifično) za mlade",
+      "Usluge (specifično) za djecu",
+      "Prevencija -promicanje zdravlja",
+      "Zdravstveni odgoj i obrazovanje",
+    ],
+  },
+  {
+    category: "Ustanova pružanja usluge",
+    options: ["Javna (državna) ustanova", "Privatna ustanova", "Udruga - NVO"],
+  },
+  {
+    category: "Vrsta korisnika",
+    options: [
+      "Sve dobne skupine",
+      "Mlade punoljetne osobe",
+      "Djeca (do 13 godina)",
+      "Osobe s invaliditetom",
+    ],
+  },
+  {
+    category: "Trošak za korisnike",
+    options: [
+      "Besplatno",
+      "Naplata sukladno cjeniku usluga",
+      "Pojedine usluge uz nadoplatu",
+    ],
+  },
+  {
+    category: "Radno vrijeme",
+    options: ["Ponedjeljak - Petak", "Subota", "Rad nedjeljom"],
+  },
+];
+
 function DropdownWithCheckboxes({ onFilterChange }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<{
+    [key: string]: string[];
+  }>({});
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
-  const options = [
-    "Besplatne usluge",
-    "Usluge s naplatom",
-    "Bolnice",
-    "Domovi zdravlja",
-    "Ljekarne",
-    "Poliklinike",
-    "Prevencija ovisnosti",
-    "Psiholozi",
-  ];
+  const handleCheckboxChange = (category: string, option: string) => {
+    const updatedCategory = selectedFilters[category]?.includes(option)
+      ? selectedFilters[category].filter((item) => item !== option)
+      : [...(selectedFilters[category] || []), option];
 
-  const handleCheckboxChange = (option: string) => {
-    const updatedItems = selectedItems.includes(option)
-      ? selectedItems.filter((item) => item !== option)
-      : [...selectedItems, option];
-    setSelectedItems(updatedItems);
-    onFilterChange(updatedItems); // Notify the parent about the updated filters
+    const updatedFilters = {
+      ...selectedFilters,
+      [category]: updatedCategory,
+    };
+
+    setSelectedFilters(updatedFilters);
+    onFilterChange(updatedFilters);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
+  const toggleCategory = (category: string) => {
+    if (expandedCategories.includes(category)) {
+      setExpandedCategories(
+        expandedCategories.filter((cat) => cat !== category)
+      );
+    } else {
+      setExpandedCategories([...expandedCategories, category]);
+    }
   };
 
   return (
     <div className="dropdown-container">
-      <button className="dropdown-button" onClick={() => setIsOpen(!isOpen)}>
-        {selectedItems.length > 0
-          ? `Odabrano (${selectedItems.length})`
-          : "Filtriraj"}
-        <span className="dropdown-icon">▼</span>
+      <button className="dropdown-button" onClick={toggleDropdown}>
+        Filteri{" "}
+        <i className={`fa fa-chevron-down ${dropdownVisible ? "open" : ""}`} />
       </button>
-
-      {isOpen && (
-        <div className="dropdown-menu">
-          {options.map((option) => (
-            <div key={option} className="dropdown-option">
-              <input
-                type="checkbox"
-                id={option}
-                checked={selectedItems.includes(option)}
-                onChange={() => handleCheckboxChange(option)}
-                aria-labelledby={option}
+      <div className={`dropdown-menu ${dropdownVisible ? "show" : ""}`}>
+        {filterData.map((filter) => (
+          <div key={filter.category} className="filter-section">
+            <div
+              className="category-header"
+              onClick={() => toggleCategory(filter.category)}
+            >
+              <span>{filter.category}</span>
+              <i
+                className={`fa fa-chevron-${
+                  expandedCategories.includes(filter.category) ? "up" : "down"
+                } category-icon`}
               />
-              <label htmlFor={option}>{option}</label>
             </div>
-          ))}
-        </div>
-      )}
+            {expandedCategories.includes(filter.category) && (
+              <div className="filter-options">
+                {filter.options.map((option) => (
+                  <div key={option} className="filter-option">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      id={`${filter.category}-${option}`}
+                      checked={
+                        selectedFilters[filter.category]?.includes(option) ||
+                        false
+                      }
+                      onChange={() =>
+                        handleCheckboxChange(filter.category, option)
+                      }
+                      aria-labelledby={option}
+                    />
+                    <label htmlFor={`${filter.category}-${option}`}>
+                      {option}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+        <button
+          className="filter-apply-button"
+          onClick={() => console.log(selectedFilters)}
+        >
+          Primjeni
+        </button>
+      </div>
     </div>
   );
 }

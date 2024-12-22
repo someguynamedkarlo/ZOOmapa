@@ -8,15 +8,14 @@ import domslik from "./icons/dom3.webp";
 import bolnicaslik from "./icons/bolnica.webp";
 import ljekarnaslik from "./icons/ljekarna.webp";
 import polislik from "./icons/poli.webp";
-import fetchData from "./firebase";
-
+import fetchData from "./supabase";
+import "./CSS/App.css";
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 
 interface MapComponentProps {
   selectedFilters: string[];
   searchTerm: string;
   mapCenter: [number, number]; // Add mapCenter prop
-  // Add handler for search result click
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({
@@ -27,14 +26,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [data, setData] = useState<any[]>([]);
   const mapRef = useRef<L.Map | null>(null); // Reference to Leaflet map instance
   const markersRef = useRef<any[]>([]); // Store refs for markers
-
-  useEffect(() => {
-    const loadData = async () => {
-      const fetchedData = await fetchData();
-      setData(fetchedData);
-    };
-    loadData();
-  }, []);
 
   const serviceMapping: { [key: string]: number } = {
     "Domovi zdravlja": 2,
@@ -54,26 +45,39 @@ const MapComponent: React.FC<MapComponentProps> = ({
     6: psihoslik,
   };
 
-  const filteredData = data
-    .filter((location) => {
-      const matchesPay =
-        (selectedFilters.includes("Besplatne usluge") && location.Pay === 0) ||
-        (selectedFilters.includes("Usluge s naplatom") && location.Pay === 1);
+  useEffect(() => {
+    const loadData = async () => {
+      const filters: { pay?: number; type?: number[] } = {};
 
-      const matchesType = selectedFilters.some((filter) => {
-        const typeMatch = serviceMapping[filter];
-        return typeMatch === location.Type;
-      });
-
-      return matchesPay || matchesType || selectedFilters.length === 0;
-    })
-    .filter((location) => {
-      // Only filter by searchTerm if it's not empty, otherwise include all results
-      if (searchTerm.trim() !== "") {
-        return location.Name.toLowerCase().includes(searchTerm.toLowerCase());
+      // Construct filters based on selectedFilters
+      if (selectedFilters.includes("Besplatne usluge")) {
+        filters.pay = 0;
+      } else if (selectedFilters.includes("Usluge s naplatom")) {
+        filters.pay = 1;
       }
-      return true; // Return true to include all locations if searchTerm is empty
-    });
+
+      const types = selectedFilters
+        .filter((filter) => serviceMapping[filter] !== undefined)
+        .map((filter) => serviceMapping[filter]);
+
+      if (types.length > 0) {
+        filters.type = types;
+      }
+
+      const fetchedData = await fetchData(filters); // Fetch filtered data
+      setData(fetchedData);
+    };
+    loadData();
+  }, [selectedFilters]); // Re-fetch data whenever selectedFilters change
+
+  // Filter the data based on the searchTerm
+  const filteredData = data.filter((location) => {
+    // Only filter by searchTerm if it's not empty, otherwise include all results
+    if (searchTerm.trim() !== "") {
+      return location.Name.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+    return true; // Return true to include all locations if searchTerm is empty
+  });
 
   const displayedData = searchTerm ? filteredData.slice(0, 10) : filteredData;
 
@@ -106,12 +110,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
 
   return (
     <MapContainer
-      style={{ height: "92%", width: "100%" }}
-      center={[45.32560918851513, 14.44176433327116]} // Default center
+      style={{ height: "100%", width: "100%" }}
+      center={mapCenter} // Use the passed mapCenter prop
       zoom={14}
       minZoom={11}
       scrollWheelZoom={true}
       ref={mapRef}
+      zoomControl={false}
     >
       <TileLayer
         url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}

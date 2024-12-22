@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./CSS/App.css";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
 import MapComponent from "./mapComponent";
-import fetchData from "./firebase";
+import fetchData from "./supabase";
 
 function App() {
   const serviceMapping: { [key: string]: number } = {
@@ -24,22 +24,43 @@ function App() {
 
   useEffect(() => {
     const loadData = async () => {
-      const fetchedData = await fetchData();
+      // Construct filters based on selected filters
+      const filters: { pay?: number; type?: number[] } = {};
+      if (selectedFilters.includes("Besplatne usluge")) {
+        filters.pay = 0; // Free services
+      } else if (selectedFilters.includes("Usluge s naplatom")) {
+        filters.pay = 1; // Paid services
+      }
+
+      // Extract selected service types
+      const types = selectedFilters
+        .filter((filter) => serviceMapping[filter] !== undefined)
+        .map((filter) => serviceMapping[filter]);
+
+      if (types.length > 0) {
+        filters.type = types; // Only include selected types
+      }
+
+      const fetchedData = await fetchData(filters); // Pass filters to fetchData
       setData(fetchedData);
     };
     loadData();
-  }, []);
+  }, [selectedFilters]); // Re-fetch data whenever filters change
 
-  const handleFilterChange = (filters: string[]) => {
-    setSelectedFilters(filters);
+  const handleFilterChange = (filters: { [key: string]: string[] }) => {
+    // Flatten the filters object into an array of selected options
+    const selectedOptions = Object.values(filters).flat();
+    setSelectedFilters(selectedOptions);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
+
   const resetSearch = () => {
     setSearchTerm("");
   };
+
   const updateFilteredMatches = () => {
     if (!searchTerm.trim()) {
       setFilteredMatches([]); // Clear results if searchTerm is empty
@@ -48,6 +69,7 @@ function App() {
 
     const filteredData = data
       .filter((location) => {
+        // Ensure pay and type match the selected filters (AND condition)
         const matchesPay =
           (selectedFilters.includes("Besplatne usluge") &&
             location.Pay === 0) ||
@@ -58,7 +80,8 @@ function App() {
           return typeMatch === location.Type;
         });
 
-        return matchesPay || matchesType || selectedFilters.length === 0;
+        // Return if both conditions are satisfied (AND logic)
+        return matchesPay && matchesType;
       })
       .filter((location) =>
         location.Name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -78,8 +101,6 @@ function App() {
 
   return (
     <div style={{ height: "100%" }}>
-      {" "}
-      {/* Ensuring the parent div takes full height */}
       <div className="gore">
         <input
           type="text"

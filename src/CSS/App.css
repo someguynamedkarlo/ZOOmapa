@@ -20,16 +20,24 @@ body {
 }
 .mapa {
   width: 100vw;
+  height: 100%;
   position: absolute;
-  bottom: 0;
+  top: 0;
+  left: 0;
 }
 
 .gore {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  background-color: rgba(0, 0, 0, 0); /* Semi-transparent background */
+  padding: 10px;
+  z-index: 1000; /* Ensure it is above the map */
 }
 
 input {
@@ -49,15 +57,26 @@ svg {
 .dropdown-container {
   z-index: 1000000;
 }
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1170px) {
+  .search-results {
+    top: 11vh !important;
+  }
   .dropdown-container {
     z-index: 1000000;
     margin-bottom: 10px;
   }
+  .Title {
+    visibility: hidden;
+  }
+}
+.Title {
+  position: absolute;
+  top: 0px;
+  left: 20px;
 }
 
 .search-results {
-  top: 70%;
+  top: 4vh;
   width: 100%;
   max-width: 400px;
   margin-top: 10px;
@@ -88,5 +107,5 @@ svg {
 
 /* Hover effect for search result items */
 .search-result:hover {
-  background-color: #f1f1f15a;
+  background-color: #c3c3c335;
 }
