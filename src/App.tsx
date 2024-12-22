@@ -3,7 +3,7 @@ import "./CSS/App.css";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
 import MapComponent from "./mapComponent";
 import fetchData from "./supabase";
-
+import ScrollableMenu from "./ScrollableMenu";
 function App() {
   const serviceMapping: { [key: string]: number } = {
     "Domovi zdravlja": 2,
@@ -102,13 +102,37 @@ function App() {
   return (
     <div style={{ height: "100%" }}>
       <div className="gore">
-        <input
-          type="text"
-          placeholder="Pretraži"
-          id="searchbar"
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: "20px",
+              transform: "translateY(-50%)",
+              fill: "#fff",
+            }}
+          >
+            <path
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              d="M21 21l-6-6M9 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"
+            />
+          </svg>
+          <input
+            type="text"
+            placeholder=""
+            aria-label="Your field name"
+            id="searchbar"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            style={{ paddingRight: "20px" }} // Space for the icon
+          />
+        </div>
         <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
         {filteredMatches.length > 0 && (
           <div className="search-results">
@@ -125,6 +149,7 @@ function App() {
             </div>
           </div>
         )}
+        <ScrollableMenu />
       </div>
       <MapComponent
         selectedFilters={selectedFilters}

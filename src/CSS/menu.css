@@ -28,6 +28,7 @@
   justify-content: space-between;
   align-items: center;
   z-index: 100;
+  border-width: 0px;
 }
 
 /* Dropdown menu styling */
@@ -76,7 +77,7 @@
 
 /* Collapse indicator for categories */
 .category-icon {
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
 }
 
 .category-icon.open {
@@ -93,6 +94,7 @@
   overflow-y: auto;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  border-width: 0px;
 }
 
 .filter-section {
