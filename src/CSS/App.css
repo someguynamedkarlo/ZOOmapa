@@ -1,4 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+#root {
+  width: 100%;
+  height: 100%;
+}
 
 body {
   margin: 0;
@@ -19,7 +23,7 @@ body {
   height: 100vh;
 }
 .mapa {
-  width: 100vw;
+  width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
@@ -51,6 +55,7 @@ input {
   background-color: #181818;
   color: #181818;
   border-width: 0px;
+  color: white;
 }
 
 svg {
@@ -70,6 +75,31 @@ svg {
   }
   .Title {
     visibility: hidden;
+  }
+  .scroll-stuff {
+    width: 93vw !important;
+  }
+  .scroll-container {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    gap: 10px; /* Space between items */
+    width: 92%; /* Fixed container width */
+    white-space: nowrap; /* Prevent wrapping of items */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+  }
+  .gore {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    flex-wrap: wrap;
+    background-color: rgba(0, 0, 0, 0); /* Semi-transparent background */
+    padding: 10px;
+    z-index: 1000; /* Ensure it is above the map */
   }
 }
 .Title {
@@ -132,7 +162,7 @@ svg {
   color: #fff;
   border: none;
   cursor: pointer;
-  padding: 10px;
+  padding: 0px;
   font-size: 60px; /* Larger arrow size */
   display: flex;
   align-items: center;
@@ -147,4 +177,11 @@ svg {
   border-radius: 20px; /* Rounded corners */
   text-align: center;
   cursor: pointer;
+}
+
+.scroll-stuff {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
 }

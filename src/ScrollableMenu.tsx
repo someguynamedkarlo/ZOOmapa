@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
-
+import { useRef } from "react";
+import "./CSS/App.css";
+import "./CSS/menu.css";
 function ScrollableMenu() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +24,7 @@ function ScrollableMenu() {
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    <div className="scroll-stuff">
       <button
         className="scroll-arrow"
         onClick={() => scrollHorizontally("left")}
