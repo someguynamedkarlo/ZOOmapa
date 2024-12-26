@@ -19,26 +19,26 @@ const filterMappingTime = {
   "Rad nedjeljom": 2,
 };
 const lokacijeMapping = {
-  "zdravstveno osiguranje": 0,
-  "USLUGE (SPECIFIČNO) ZA MLADE": 1,
-  "USLUGE (SPECIFIČNO) ZA DJECU": 2,
-  "PREVENCIJA - PROMICANJE ZDRAVLJA I SUZBIJANJE BOLESTI": 3,
-  "ZDRAVSTVENI ODGOJ I OBRAZOVANJE": 4,
-  "OBITELJSKA MEDICINA / OPĆA PRAKSA": 5,
-  "HITNA MEDICINSKA POMOĆ": 6,
-  BOLNICE: 7,
-  "PSIHIJATRIJSKO LIJEČENJE": 8,
-  "PSIHOLOŠKO SAVJETOVANJE/POMOĆ": 9,
-  "OSTALE SPECIJALIZIRANE USLUGE SAVJETOVANJA": 10,
-  "PODRŠKA OVISNICIMA": 11,
-  "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": 12,
-  "PODRŠKA OBOLJELIMA I REHABILITACIJA": 13,
-  STOMATOLOZI: 14,
-  "LJEKARNE S DEŽURSTVIMA": 15,
-  "LJEKARNE BEZ DEŽURSTAVA": 16,
-  VETERINARI: 17,
-  "PRIVATNE BOLNICE I POLIKLINIKE": 18,
-  "OSTALE USLUGE - NEKATEGORIZIRANO": 19,
+  "zdravstveno osiguranje": 1,
+  "USLUGE (SPECIFIČNO) ZA MLADE": 2,
+  "USLUGE (SPECIFIČNO) ZA DJECU": 3,
+  "PREVENCIJA - PROMICANJE ZDRAVLJA I SUZBIJANJE BOLESTI": 4,
+  "ZDRAVSTVENI ODGOJ I OBRAZOVANJE": 5,
+  "OBITELJSKA MEDICINA / OPĆA PRAKSA": 6,
+  "HITNA MEDICINSKA POMOĆ": 7,
+  BOLNICE: 8,
+  "PSIHIJATRIJSKO LIJEČENJE": 9,
+  "PSIHOLOŠKO SAVJETOVANJE/POMOĆ": 10,
+  "OSTALE SPECIJALIZIRANE USLUGE SAVJETOVANJA": 11,
+  "PODRŠKA OVISNICIMA": 12,
+  "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": 13,
+  "PODRŠKA OBOLJELIMA I REHABILITACIJA": 14,
+  STOMATOLOZI: 15,
+  "LJEKARNE S DEŽURSTVIMA": 16,
+  "LJEKARNE BEZ DEŽURSTAVA": 17,
+  VETERINARI: 18,
+  "PRIVATNE BOLNICE I POLIKLINIKE": 19,
+  "OSTALE USLUGE - NEKATEGORIZIRANO": 20,
 };
 
 function App() {
@@ -144,24 +144,27 @@ function App() {
         // Handle filtering for "Lokacije" filter (kategorija array)
         if (category === "Lokacije") {
           const locationValues = options
-            .map(
-              (option) =>
-                lokacijeMapping[option as keyof typeof lokacijeMapping] ?? -1
-            ) // Use a fallback if not found
-            .filter((value) => value !== -1); // Remove invalid ones
+            .map((option) => {
+              // Normalize the key (trimmed and lowercase) for mapping
+              const normalizedOption = option.trim().toLowerCase();
 
-          console.log("Mapped location values with fallback:", locationValues);
-          // Ensure only valid numbers are mapped
+              // Find the corresponding key in lokacijeMapping by normalizing it
+              const mappedValue = Object.entries(lokacijeMapping).find(
+                ([key]) => key.trim().toLowerCase() === normalizedOption
+              )?.[1];
 
-          console.log("Location filter selected options:", options);
-          console.log("Mapped location values:", locationValues);
+              console.log(`Mapping option "${option}" to "${mappedValue}"`);
+              return mappedValue ?? -1; // Fallback for unmapped
+            })
+            .filter((value) => value !== -1); // Remove invalid mappings
 
-          // Check if any of the locationValues is present in the usluga.kategorija array
+          console.log("Mapped location values (normalized):", locationValues);
+
           const matchesLocation = locationValues.some((locValue) =>
             usluga.kategorija.includes(locValue)
           );
 
-          console.log("Checking service's kategorija:", usluga.kategorija);
+          console.log("Service's kategorija:", usluga.kategorija);
           console.log("Matches location filter:", matchesLocation);
 
           return locationValues.length === 0 || matchesLocation;
