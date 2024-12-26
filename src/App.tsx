@@ -1,103 +1,137 @@
-import { useState, useEffect } from "react";
-import "./CSS/App.css";
+import { useState, useEffect, useRef } from "react";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
 import MapComponent from "./mapComponent";
-import fetchData from "./supabase";
+import { popisUsluga } from "./Usluge";
+import "./CSS/App.css";
 import ScrollableMenu from "./ScrollableMenu";
-function App() {
-  const serviceMapping: { [key: string]: number } = {
-    "Domovi zdravlja": 2,
-    Bolnice: 1,
-    Ljekarne: 3,
-    Poliklinike: 4,
-    "Prevencija ovisnosti": 5,
-    Psiholozi: 6,
-  };
 
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
+const filterMapping = {
+  Besplatno: 0,
+  "Naplata sukladno cjeniku usluga": 1,
+  "Pojedine usluge uz nadoplatu": 2,
+};
+
+function App() {
+  const [selectedFilters, setSelectedFilters] = useState<{
+    [key: string]: string[];
+  }>({});
   const [searchTerm, setSearchTerm] = useState("");
   const [mapCenter, setMapCenter] = useState<[number, number]>([
     45.32560918851513, 14.44176433327116,
   ]);
-  const [filteredMatches, setFilteredMatches] = useState<any[]>([]);
-  const [data, setData] = useState<any[]>([]); // Store fetched data
+  const [filteredMatches, setFilteredMatches] = useState<Usluga[]>([]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      // Construct filters based on selected filters
-      const filters: { pay?: number; type?: number[] } = {};
-      if (selectedFilters.includes("Besplatne usluge")) {
-        filters.pay = 0; // Free services
-      } else if (selectedFilters.includes("Usluge s naplatom")) {
-        filters.pay = 1; // Paid services
-      }
+  interface Usluga {
+    imeUstanove: string;
+    lat: number;
+    lng: number;
+    adresa: string;
+    telefon: string;
+    email: string;
+    web: string;
+    radnoVrijeme: string;
+    preduvjeti: string;
+    trosak: number;
+    namjenjeno: string;
+    opis: string;
+    specUsluga: string;
+    pruzatelj: string;
+    kategorija: number[]; // Keep as an array of numbers
+  }
 
-      // Extract selected service types
-      const types = selectedFilters
-        .filter((filter) => serviceMapping[filter] !== undefined)
-        .map((filter) => serviceMapping[filter]);
+  const mapRef = useRef<L.Map | null>(null);
 
-      if (types.length > 0) {
-        filters.type = types; // Only include selected types
-      }
+  // Fixing the issue with type mapping
+  const updateFilteredMatches = () => {
+    console.log(
+      "Selected Filters inside updateFilteredMatches:",
+      selectedFilters
+    );
 
-      const fetchedData = await fetchData(filters); // Pass filters to fetchData
-      setData(fetchedData);
-    };
-    loadData();
-  }, [selectedFilters]); // Re-fetch data whenever filters change
+    const filteredData = popisUsluga.filter((location: Usluga) => {
+      // Search term filtering (based on "imeUstanove")
+      const matchesSearch = searchTerm
+        ? location.imeUstanove.toLowerCase().includes(searchTerm.toLowerCase())
+        : true;
 
-  const handleFilterChange = (filters: { [key: string]: string[] }) => {
-    // Flatten the filters object into an array of selected options
-    const selectedOptions = Object.values(filters).flat();
-    setSelectedFilters(selectedOptions);
+      // Filter matches based on selected filters
+      const matchesFilters = Object.entries(selectedFilters).every(
+        ([category, options]) => {
+          // If no options are selected for this category, return true (i.e., no filtering)
+          if (options.length === 0) return true;
+
+          const categoryValue = location[category as keyof Usluga];
+
+          // Handle 'Trošak za korisnike' filter
+          if (category === "Trošak za korisnike") {
+            // Map selected filter options (strings) to numeric values using filterMapping
+            const mappedTrosak: number[] = options
+              .map(
+                (option) => filterMapping[option as keyof typeof filterMapping]
+              )
+              .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
+
+            // Check if the mapped options intersect with the "trosak" value of the location
+            return (
+              mappedTrosak.length === 0 ||
+              mappedTrosak.includes(location.trosak)
+            );
+          }
+
+          // Handle 'Vrste korisnika' filter (based on "namjenjeno" field)
+          if (category === "vrste korisnika") {
+            console.log("testing something options are", options);
+            return options.some((option) =>
+              location.namjenjeno.toLowerCase().includes(option.toLowerCase())
+            );
+          }
+
+          // Handle filtering based on arrays like "kategorija"
+          if (Array.isArray(categoryValue)) {
+            return options.some((option) =>
+              categoryValue.includes(Number(option))
+            );
+          }
+
+          // Handle filtering based on string fields (e.g., "imeUstanove", "adresa")
+          if (typeof categoryValue === "string") {
+            return options.some((option) =>
+              categoryValue.toLowerCase().includes(option.toLowerCase())
+            );
+          }
+
+          return false;
+        }
+      );
+
+      // Return the final match for both search term and filters
+      return matchesSearch && matchesFilters;
+    });
+
+    // Update the filtered matches state
+    setFilteredMatches(filteredData);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const resetSearch = () => {
-    setSearchTerm("");
-  };
-
-  const updateFilteredMatches = () => {
-    if (!searchTerm.trim()) {
-      setFilteredMatches([]); // Clear results if searchTerm is empty
-      return;
-    }
-
-    const filteredData = data
-      .filter((location) => {
-        // Ensure pay and type match the selected filters (AND condition)
-        const matchesPay =
-          (selectedFilters.includes("Besplatne usluge") &&
-            location.Pay === 0) ||
-          (selectedFilters.includes("Usluge s naplatom") && location.Pay === 1);
-
-        const matchesType = selectedFilters.some((filter) => {
-          const typeMatch = serviceMapping[filter];
-          return typeMatch === location.Type;
-        });
-
-        // Return if both conditions are satisfied (AND logic)
-        return matchesPay && matchesType;
-      })
-      .filter((location) =>
-        location.Name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-    setFilteredMatches(filteredData);
+  const handleFilterChange = (filters: { [key: string]: string[] }) => {
+    // To prevent overwriting existing selected filters, merge them with the new filters
+    console.log("Handling Filter Change", filters);
+    setSelectedFilters((prevFilters) => {
+      console.log("Current Selected Filters before update:", prevFilters);
+      return {
+        ...prevFilters,
+        ...filters,
+      };
+    });
   };
 
   useEffect(() => {
-    updateFilteredMatches(); // Update filtered matches whenever data, filters, or searchTerm changes
-  }, [data, selectedFilters, searchTerm]);
-
-  const handleSearchResultClick = (lat: number, lng: number) => {
-    setMapCenter([lat, lng]);
-    resetSearch(); // Update map center when search result is clicked
-  };
+    updateFilteredMatches();
+  }, [searchTerm, selectedFilters]);
 
   return (
     <div style={{ height: "100%" }}>
@@ -125,36 +159,22 @@ function App() {
           </svg>
           <input
             type="text"
-            placeholder=""
-            aria-label="Your field name"
             id="searchbar"
             value={searchTerm}
             onChange={handleSearchChange}
-            style={{ paddingRight: "20px" }} // Space for the icon
+            style={{ paddingRight: "20px" }}
+            placeholder="Search..."
           />
         </div>
         <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
-        {filteredMatches.length > 0 && (
-          <div className="search-results">
-            <div>
-              {filteredMatches.slice(0, 5).map((result, index) => (
-                <div
-                  key={index}
-                  className="search-result"
-                  onClick={() => handleSearchResultClick(result.Y, result.X)}
-                >
-                  {result.Name}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
         <ScrollableMenu />
       </div>
+
       <MapComponent
-        selectedFilters={selectedFilters}
-        searchTerm={searchTerm}
         mapCenter={mapCenter}
+        data={filteredMatches}
+        mapRef={mapRef}
+        apiKey={apiKey}
       />
     </div>
   );
