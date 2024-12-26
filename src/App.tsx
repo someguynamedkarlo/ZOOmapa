@@ -6,10 +6,39 @@ import "./CSS/App.css";
 import ScrollableMenu from "./ScrollableMenu";
 
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
-const filterMapping = {
+
+const filterMappingCost = {
   Besplatno: 0,
   "Naplata sukladno cjeniku usluga": 1,
   "Pojedine usluge uz nadoplatu": 2,
+};
+
+const filterMappingTime = {
+  "Ponedjeljak - Petak": 0,
+  Subota: 1,
+  "Rad nedjeljom": 2,
+};
+const lokacijeMapping = {
+  "zdravstveno osiguranje": 0,
+  "USLUGE (SPECIFIČNO) ZA MLADE": 1,
+  "USLUGE (SPECIFIČNO) ZA DJECU": 2,
+  "PREVENCIJA - PROMICANJE ZDRAVLJA I SUZBIJANJE BOLESTI": 3,
+  "ZDRAVSTVENI ODGOJ I OBRAZOVANJE": 4,
+  "OBITELJSKA MEDICINA / OPĆA PRAKSA": 5,
+  "HITNA MEDICINSKA POMOĆ": 6,
+  BOLNICE: 7,
+  "PSIHIJATRIJSKO LIJEČENJE": 8,
+  "PSIHOLOŠKO SAVJETOVANJE/POMOĆ": 9,
+  "OSTALE SPECIJALIZIRANE USLUGE SAVJETOVANJA": 10,
+  "PODRŠKA OVISNICIMA": 11,
+  "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": 12,
+  "PODRŠKA OBOLJELIMA I REHABILITACIJA": 13,
+  STOMATOLOZI: 14,
+  "LJEKARNE S DEŽURSTVIMA": 15,
+  "LJEKARNE BEZ DEŽURSTAVA": 16,
+  VETERINARI: 17,
+  "PRIVATNE BOLNICE I POLIKLINIKE": 18,
+  "OSTALE USLUGE - NEKATEGORIZIRANO": 19,
 };
 
 function App() {
@@ -37,79 +66,131 @@ function App() {
     opis: string;
     specUsluga: string;
     pruzatelj: string;
-    kategorija: number[]; // Keep as an array of numbers
+    kategorija: number[];
   }
 
   const mapRef = useRef<L.Map | null>(null);
 
-  // Fixing the issue with type mapping
-  const updateFilteredMatches = () => {
-    console.log(
-      "Selected Filters inside updateFilteredMatches:",
-      selectedFilters
+  // Function to check if the service matches the selected filters
+  const spadaLiUFilter = (
+    usluga: Usluga,
+    filters: { [key: string]: string[] }
+  ) => {
+    const matchesSearch = searchTerm
+      ? usluga.imeUstanove.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+
+    const matchesFilters = Object.entries(filters).every(
+      ([category, options]) => {
+        if (options.length === 0) return true; // No filter selected for this category, allow all items
+
+        const categoryValue = usluga[category as keyof Usluga];
+
+        // Handle filtering for "Vrste korisnika" filter
+        if (category === "Trošak za korisnike") {
+          const mappedTrosak: number[] = options
+            .map(
+              (option) =>
+                filterMappingCost[option as keyof typeof filterMappingCost]
+            )
+            .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
+
+          // Log the selected options and mapped values
+          console.log("Selected Trošak options:", options);
+          console.log("Mapped Trošak values:", mappedTrosak);
+          console.log("Service 'trosak' value:", usluga.trosak);
+
+          // Check if the mapped options intersect with the "trosak" value of the location
+          return (
+            mappedTrosak.length === 0 || mappedTrosak.includes(usluga.trosak)
+          );
+        }
+        if (category === "Vrsta korisnika") {
+          console.log("Checking Vrste korisnika filter options:", options);
+          console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
+
+          // Check if any of the selected options match the 'namjenjeno' field of the service
+          return options.some((option) =>
+            usluga.namjenjeno.toLowerCase().includes(option.toLowerCase())
+          );
+        }
+
+        if (category === "Ustanova pružanja usluge") {
+          console.log("Checking Vrste korisnika filter options:", options);
+          console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
+
+          // Check if any of the selected options match the 'namjenjeno' field of the service
+          return options.some((option) =>
+            usluga.pruzatelj.toLowerCase().includes(option.toLowerCase())
+          );
+        }
+        if (category === "Radno vrijeme") {
+          const mappedTime: number[] = options
+            .map(
+              (option) =>
+                filterMappingTime[option as keyof typeof filterMappingTime]
+            )
+            .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
+
+          // Log the selected options and mapped values
+          console.log("Selected Trošak options:", options);
+          console.log("Mapped Trošak values:", mappedTime);
+          console.log("Service 'trosak' value:", usluga.trosak);
+
+          // Check if the mapped options intersect with the "trosak" value of the location
+          return mappedTime.length === 0 || mappedTime.includes(usluga.trosak);
+        }
+        // Handle filtering for "Lokacije" filter (kategorija array)
+        // Handle filtering for "Lokacije" filter (kategorija array)
+        if (category === "Lokacije") {
+          const locationValues = options
+            .map(
+              (option) =>
+                lokacijeMapping[option as keyof typeof lokacijeMapping] ?? -1
+            ) // Use a fallback if not found
+            .filter((value) => value !== -1); // Remove invalid ones
+
+          console.log("Mapped location values with fallback:", locationValues);
+          // Ensure only valid numbers are mapped
+
+          console.log("Location filter selected options:", options);
+          console.log("Mapped location values:", locationValues);
+
+          // Check if any of the locationValues is present in the usluga.kategorija array
+          const matchesLocation = locationValues.some((locValue) =>
+            usluga.kategorija.includes(locValue)
+          );
+
+          console.log("Checking service's kategorija:", usluga.kategorija);
+          console.log("Matches location filter:", matchesLocation);
+
+          return locationValues.length === 0 || matchesLocation;
+        }
+
+        // Handle filtering based on arrays like "kategorija"
+        if (Array.isArray(categoryValue)) {
+          return options.some((option) =>
+            categoryValue.includes(Number(option))
+          );
+        }
+
+        if (typeof categoryValue === "string") {
+          return options.some((option) =>
+            categoryValue.toLowerCase().includes(option.toLowerCase())
+          );
+        }
+
+        return false; // If no valid category matches, return false
+      }
     );
 
-    const filteredData = popisUsluga.filter((location: Usluga) => {
-      // Search term filtering (based on "imeUstanove")
-      const matchesSearch = searchTerm
-        ? location.imeUstanove.toLowerCase().includes(searchTerm.toLowerCase())
-        : true;
+    return matchesSearch && matchesFilters; // Return true if both search and filters match
+  };
 
-      // Filter matches based on selected filters
-      const matchesFilters = Object.entries(selectedFilters).every(
-        ([category, options]) => {
-          // If no options are selected for this category, return true (i.e., no filtering)
-          if (options.length === 0) return true;
-
-          const categoryValue = location[category as keyof Usluga];
-
-          // Handle 'Trošak za korisnike' filter
-          if (category === "Trošak za korisnike") {
-            // Map selected filter options (strings) to numeric values using filterMapping
-            const mappedTrosak: number[] = options
-              .map(
-                (option) => filterMapping[option as keyof typeof filterMapping]
-              )
-              .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
-
-            // Check if the mapped options intersect with the "trosak" value of the location
-            return (
-              mappedTrosak.length === 0 ||
-              mappedTrosak.includes(location.trosak)
-            );
-          }
-
-          // Handle 'Vrste korisnika' filter (based on "namjenjeno" field)
-          if (category === "vrste korisnika") {
-            console.log("testing something options are", options);
-            return options.some((option) =>
-              location.namjenjeno.toLowerCase().includes(option.toLowerCase())
-            );
-          }
-
-          // Handle filtering based on arrays like "kategorija"
-          if (Array.isArray(categoryValue)) {
-            return options.some((option) =>
-              categoryValue.includes(Number(option))
-            );
-          }
-
-          // Handle filtering based on string fields (e.g., "imeUstanove", "adresa")
-          if (typeof categoryValue === "string") {
-            return options.some((option) =>
-              categoryValue.toLowerCase().includes(option.toLowerCase())
-            );
-          }
-
-          return false;
-        }
-      );
-
-      // Return the final match for both search term and filters
-      return matchesSearch && matchesFilters;
-    });
-
-    // Update the filtered matches state
+  const updateFilteredMatches = () => {
+    const filteredData = popisUsluga.filter((usluga: Usluga) =>
+      spadaLiUFilter(usluga, selectedFilters)
+    );
     setFilteredMatches(filteredData);
   };
 
@@ -118,15 +199,7 @@ function App() {
   };
 
   const handleFilterChange = (filters: { [key: string]: string[] }) => {
-    // To prevent overwriting existing selected filters, merge them with the new filters
-    console.log("Handling Filter Change", filters);
-    setSelectedFilters((prevFilters) => {
-      console.log("Current Selected Filters before update:", prevFilters);
-      return {
-        ...prevFilters,
-        ...filters,
-      };
-    });
+    setSelectedFilters(filters);
   };
 
   useEffect(() => {

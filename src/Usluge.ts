@@ -7,6 +7,7 @@ export type Usluga = {
   email: string;
   web: string;
   radnoVrijeme: string;
+  radVrijeme2: number /*ovo tu je za filtriranje 0-pon do pet 1- subota 2-rad nedjeljom*/;
   preduvjeti: string;
   trosak: number; // 0-besplatno 1-Naplata sukladno cjeniku usluga 2-Pojedine usluge uz nadoplatu
   namjenjeno: string;
@@ -50,6 +51,7 @@ const popisUsluga: Usluga[] = [
     web: "https://hzzo.hr/kontakt/rijeka",
     radnoVrijeme:
       "pon - pet: 08:00 h - 16:00 h subota: zatvoreno nedjelja: zatvoreno",
+    radVrijeme2: 0,
     preduvjeti: "N/A",
     trosak: 0,
     namjenjeno: "sve dobne skupine",

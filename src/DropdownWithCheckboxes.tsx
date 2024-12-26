@@ -124,12 +124,6 @@ function DropdownWithCheckboxes({ onFilterChange }: DropdownProps) {
             )}
           </div>
         ))}
-        <button
-          className="filter-apply-button"
-          onClick={() => console.log(selectedFilters)}
-        >
-          Primjeni
-        </button>
       </div>
     </div>
   );
