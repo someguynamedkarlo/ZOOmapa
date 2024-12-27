@@ -61,8 +61,7 @@ const popisUsluga: Usluga[] = [
     kategorija: [7],
   },
   {
-    imeUstanove:
-      "Hrvatski zavod za zdravstveno osiguranje područna ustrojstvena jedinica Rijeka",
+    imeUstanove: "bla",
     lat: 45.34997734937575,
     lng: 14.442288929159593,
     adresa: "Slogin kula 1, 51000, Rijeka",

@@ -4,7 +4,7 @@ import MapComponent from "./mapComponent";
 import { popisUsluga } from "./Usluge";
 import "./CSS/App.css";
 import ScrollableMenu from "./ScrollableMenu";
-
+import L from "leaflet";
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 
 const filterMappingCost = {
@@ -68,6 +68,8 @@ function App() {
     pruzatelj: string;
     kategorija: number[];
   }
+  const [topResults, setTopResults] = useState<Usluga[]>([]);
+
   const handleButtonClick = (categoryLabel: string) => {
     // Find the correct mapped value for the label
     const mappedCategory = Object.entries(lokacijeMapping).find(
@@ -82,6 +84,7 @@ function App() {
       console.error(`Category "${categoryLabel}" not found in mapping.`);
     }
   };
+  const markersRef = useRef<L.Marker[]>([]); // Add this at the beginning
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -204,24 +207,39 @@ function App() {
     return matchesSearch && matchesFilters; // Return true if both search and filters match
   };
 
+  // Ensure `searchTerm` is considered in `updateFilteredMatches`
   const updateFilteredMatches = () => {
     const filteredData = popisUsluga.filter((usluga: Usluga) =>
       spadaLiUFilter(usluga, selectedFilters)
     );
+
     setFilteredMatches(filteredData);
+
+    // Sort and get the top results
+    const sortedData = filteredData.sort((a, b) =>
+      a.imeUstanove.localeCompare(b.imeUstanove)
+    );
+    setTopResults(sortedData.slice(0, 4)); // Update topResults with top 4 matches
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
+  const handleSearchResultClick = (lat: number, lng: number, index: number) => {
+    if (mapRef.current) {
+      mapRef.current.setView(new L.LatLng(lat, lng), 17); // Zoom to the clicked location
+      // Correcting the popup handling to open for the correct marker
+      markersRef.current[index]?.openPopup(); // Safe check before opening the popup
+    }
+    setSearchTerm("");
+  };
 
   const handleFilterChange = (filters: { [key: string]: string[] }) => {
     setSelectedFilters(filters);
   };
-
   useEffect(() => {
     updateFilteredMatches();
-  }, [searchTerm, selectedFilters]);
+  }, [selectedFilters, searchTerm]); // Call the function when filters or search term change
 
   return (
     <div style={{ height: "100%" }}>
@@ -260,11 +278,26 @@ function App() {
         <ScrollableMenu onCategoryClick={handleButtonClick} />
       </div>
 
+      {searchTerm && topResults.length > 0 && (
+        <ul className="search-results">
+          {topResults.map((result, index) => (
+            <li
+              key={result.imeUstanove}
+              className="search-result"
+              onClick={() =>
+                handleSearchResultClick(result.lat, result.lng, index)
+              } // pass index
+            >
+              {result.imeUstanove} ({result.adresa})
+            </li>
+          ))}
+        </ul>
+      )}
+
       <MapComponent
         mapCenter={mapCenter}
         data={filteredMatches}
         mapRef={mapRef}
-        apiKey={apiKey}
       />
     </div>
   );

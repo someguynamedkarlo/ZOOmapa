@@ -7,9 +7,9 @@ import domslik from "./icons/dom3.webp";
 import bolnicaslik from "./icons/bolnica.webp";
 import ljekarnaslik from "./icons/ljekarna.webp";
 import polislik from "./icons/poli.webp";
-import ambul from "./icons/ambul.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
+
 const MapComponent = ({
   mapCenter,
   data,
@@ -18,7 +18,6 @@ const MapComponent = ({
   mapCenter: [number, number];
   data: any[]; // Consider typing this as Usluga[] if possible
   mapRef: React.RefObject<L.Map>; // Ref type without null
-  apiKey: string;
 }) => {
   const iconMapping: { [key: number]: string } = {
     8: bolnicaslik,
@@ -27,7 +26,6 @@ const MapComponent = ({
     19: polislik,
     4: prevencijaslik,
     9: psihoslik,
-    7: ambul,
   };
   const [filteredData, setFilteredData] = useState<any[]>(data);
   const markersRef = useRef<any[]>([]);
@@ -35,7 +33,7 @@ const MapComponent = ({
   useEffect(() => {
     setFilteredData(data);
   }, [data]);
-  const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
+
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.setView(new L.LatLng(mapCenter[0], mapCenter[1]), 17);
@@ -60,7 +58,7 @@ const MapComponent = ({
       zoomControl={false}
     >
       <TileLayer
-        url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
+        url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png`}
         attribution="&copy; OpenStreetMap contributors"
       />
       <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={true}>
@@ -71,13 +69,13 @@ const MapComponent = ({
             icon={L.icon({
               iconUrl:
                 iconMapping[parseInt(location.kategorija[0])] ||
-                "default_icon.png", // Fixed handling for icon keys
+                "default_icon.png",
               iconSize: [40, 40],
             })}
             eventHandlers={{
               click: () => handleMarkerClick(location.lat, location.lng, index),
             }}
-            ref={(el) => (markersRef.current[index] = el)}
+            ref={(el) => (markersRef.current[index] = el)} // Correctly capturing the marker reference
           >
             <Popup>
               <h3>{location.imeUstanove}</h3>
