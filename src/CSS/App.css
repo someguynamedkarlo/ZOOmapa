@@ -186,3 +186,8 @@ svg {
 
   gap: 10px;
 }
+
+#p {
+  padding: 0;
+  margin: 0px;
+}

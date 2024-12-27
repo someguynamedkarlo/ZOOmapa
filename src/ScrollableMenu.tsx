@@ -1,19 +1,30 @@
 import { useRef } from "react";
 import "./CSS/App.css";
 import "./CSS/menu.css";
-function ScrollableMenu() {
+
+interface ScrollableMenuProps {
+  onCategoryClick: (categoryLabel: string) => void;
+}
+
+function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Mapping button labels to actual category values
+  const categoryMappings: { [key: string]: string } = {
+    "Hitno!": "HITNA MEDICINSKA POMOĆ",
+    "Bolnice i ordinacije": "BOLNICE",
+    Ljekarne: "LJEKARNE S DEŽURSTVIMA",
+    Veterinari: "VETERINARI",
+  };
 
   const scrollHorizontally = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
 
-      // Calculate the width of a single item
       const itemWidth = container.firstElementChild
-        ? (container.firstElementChild as HTMLElement).offsetWidth + 10 // Include gap
+        ? (container.firstElementChild as HTMLElement).offsetWidth + 10
         : 0;
 
-      // Scroll by one item's width
       const scrollAmount = direction === "left" ? -itemWidth : itemWidth;
 
       container.scrollBy({
@@ -30,22 +41,25 @@ function ScrollableMenu() {
         onClick={() => scrollHorizontally("left")}
         aria-label="Scroll left"
       >
-        &#8249; {/* Left arrow */}
+        &#8249;
       </button>
       <div className="scroll-container" ref={scrollContainerRef}>
-        {/* Replace these with your actual items */}
-        <div className="scroll-item">Hitno!</div>
-        <div className="scroll-item">Bolnice i ordinacije</div>
-        <div className="scroll-item">Ljekarne</div>
-        <div className="scroll-item">Veterinari</div>
-        <div className="scroll-item">Druge usluge</div>
+        {Object.keys(categoryMappings).map((item) => (
+          <button
+            key={item}
+            className="scroll-item"
+            onClick={() => onCategoryClick(categoryMappings[item])} // Pass the correct label
+          >
+            {item}
+          </button>
+        ))}
       </div>
       <button
         className="scroll-arrow"
         onClick={() => scrollHorizontally("right")}
         aria-label="Scroll right"
       >
-        &#8250; {/* Right arrow */}
+        &#8250;
       </button>
     </div>
   );

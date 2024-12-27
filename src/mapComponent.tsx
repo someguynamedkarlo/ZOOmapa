@@ -8,12 +8,11 @@ import bolnicaslik from "./icons/bolnica.webp";
 import ljekarnaslik from "./icons/ljekarna.webp";
 import polislik from "./icons/poli.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
-
+import "./CSS/App.css";
 const MapComponent = ({
   mapCenter,
   data,
   mapRef,
-  apiKey,
 }: {
   mapCenter: [number, number];
   data: any[]; // Consider typing this as Usluga[] if possible
@@ -79,14 +78,38 @@ const MapComponent = ({
             ref={(el) => (markersRef.current[index] = el)}
           >
             <Popup>
-              <h4>{location.imeUstanove}</h4>
+              <h3>{location.imeUstanove}</h3>
               {location.adresa || "Adresa nije dostupna"}
               <br />
               {location.telefon || "Kontakt nije dostupan"}
               <br />
-              <a href={location.web} target="_blank" rel="noopener noreferrer">
-                Otvori web stranicu
-              </a>
+              <h4>
+                <a
+                  href={location.web}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Web stranica
+                </a>
+              </h4>
+              <p id="p">
+                <h4>Email:</h4> {location.email || "Email nije dostupan"}
+              </p>
+              <p id="p">
+                <h4>Opis:</h4> {location.opis || "Opis nije dostupan"}
+              </p>
+              <p id="p">
+                <h4>Preduvjeti:</h4>{" "}
+                {location.preduvjeti || "Preduvjeti nisu dostupani"}
+              </p>
+              <p id="p">
+                <h4>Specifična usluga:</h4>{" "}
+                {location.specUsluga || "Specifična usluga nije dostupna"}
+              </p>
+              <p id="p">
+                <h4>Radno vrijeme:</h4>{" "}
+                {location.radnoVrijeme || "Radno vrijeme nije dostupno"}
+              </p>
             </Popup>
           </Marker>
         ))}

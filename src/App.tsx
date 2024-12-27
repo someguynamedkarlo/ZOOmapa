@@ -46,7 +46,7 @@ function App() {
     [key: string]: string[];
   }>({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [mapCenter, setMapCenter] = useState<[number, number]>([
+  const [mapCenter] = useState<[number, number]>([
     45.32560918851513, 14.44176433327116,
   ]);
   const [filteredMatches, setFilteredMatches] = useState<Usluga[]>([]);
@@ -68,6 +68,20 @@ function App() {
     pruzatelj: string;
     kategorija: number[];
   }
+  const handleButtonClick = (categoryLabel: string) => {
+    // Find the correct mapped value for the label
+    const mappedCategory = Object.entries(lokacijeMapping).find(
+      ([key]) => key.trim().toLowerCase() === categoryLabel.trim().toLowerCase()
+    )?.[1];
+
+    if (mappedCategory) {
+      setSelectedFilters({
+        Lokacije: [categoryLabel], // Update Lokacije filter with the clicked category
+      });
+    } else {
+      console.error(`Category "${categoryLabel}" not found in mapping.`);
+    }
+  };
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -243,7 +257,7 @@ function App() {
           />
         </div>
         <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
-        <ScrollableMenu />
+        <ScrollableMenu onCategoryClick={handleButtonClick} />
       </div>
 
       <MapComponent
