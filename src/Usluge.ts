@@ -77,7 +77,7 @@ const popisUsluga: Usluga[] = [
     opis: "Prijave, promjene i odjave",
     specUsluga: "Obvezno zdravstveno osiguranje",
     pruzatelj: "Javna (državna) ustanova",
-    kategorija: [8],
+    kategorija: [7],
   },
 ];
 

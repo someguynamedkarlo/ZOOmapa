@@ -7,6 +7,9 @@ import domslik from "./icons/dom3.webp";
 import bolnicaslik from "./icons/bolnica.webp";
 import ljekarnaslik from "./icons/ljekarna.webp";
 import polislik from "./icons/poli.webp";
+import orto from "./icons/ortodont.webp";
+import obslik from "./icons/ob.webp";
+import hitno from "./icons/hitno.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
 
@@ -22,10 +25,13 @@ const MapComponent = ({
   const iconMapping: { [key: number]: string } = {
     8: bolnicaslik,
     6: domslik,
+    7: hitno,
     16: ljekarnaslik,
     19: polislik,
+    15: orto,
     4: prevencijaslik,
     9: psihoslik,
+    5: obslik,
   };
   const [filteredData, setFilteredData] = useState<any[]>(data);
   const markersRef = useRef<any[]>([]);
@@ -58,7 +64,7 @@ const MapComponent = ({
       zoomControl={false}
     >
       <TileLayer
-        url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png`}
+        url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png`}
         attribution="&copy; OpenStreetMap contributors"
       />
       <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={true}>
