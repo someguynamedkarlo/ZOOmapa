@@ -51,7 +51,7 @@ input {
   margin: 10px;
   height: 1.9rem;
   padding: 0.5rem;
-  width: 13rem;
+  width: 17rem;
   background-color: #181818;
   color: #181818;
   border-width: 0px;
@@ -78,6 +78,19 @@ svg {
   }
   .scroll-stuff {
     width: 93vw !important;
+  }
+  input {
+    text-decoration: none;
+    resize: none;
+    border-radius: 20px;
+    margin: 10px;
+    height: 1.9rem;
+    padding: 0.5rem;
+    width: 21rem;
+    background-color: #181818;
+    color: #181818;
+    border-width: 0px;
+    color: white;
   }
   .scroll-container {
     display: flex;
@@ -159,15 +172,17 @@ svg {
 }
 
 .scroll-arrow {
-  background-color: rgba(0, 0, 0, 0); /* Transparent background */
+  background-color: rgba(0, 0, 0, 0);
   color: #fff;
   border: none;
   cursor: pointer;
   padding: 0px;
-  font-size: 60px; /* Larger arrow size */
+  font-size: 50px;
   display: flex;
   align-items: center;
+  position: relative;
   justify-content: center;
+  top: -3px;
 }
 
 .scroll-item {
@@ -178,16 +193,13 @@ svg {
   border-radius: 20px; /* Rounded corners */
   text-align: center;
   cursor: pointer;
+  border: none;
 }
 
 .scroll-stuff {
   display: flex;
   align-items: center;
+  margin-left: 10px;
 
   gap: 10px;
-}
-
-#p {
-  padding: 0;
-  margin: 0px;
 }

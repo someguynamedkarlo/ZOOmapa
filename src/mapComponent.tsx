@@ -7,6 +7,7 @@ import domslik from "./icons/dom3.webp";
 import bolnicaslik from "./icons/bolnica.webp";
 import ljekarnaslik from "./icons/ljekarna.webp";
 import polislik from "./icons/poli.webp";
+import ambul from "./icons/ambul.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
 const MapComponent = ({
@@ -20,12 +21,13 @@ const MapComponent = ({
   apiKey: string;
 }) => {
   const iconMapping: { [key: number]: string } = {
-    1: bolnicaslik,
-    2: domslik,
-    3: ljekarnaslik,
-    4: polislik,
-    5: prevencijaslik,
-    6: psihoslik,
+    8: bolnicaslik,
+    6: domslik,
+    16: ljekarnaslik,
+    19: polislik,
+    4: prevencijaslik,
+    9: psihoslik,
+    7: ambul,
   };
   const [filteredData, setFilteredData] = useState<any[]>(data);
   const markersRef = useRef<any[]>([]);
