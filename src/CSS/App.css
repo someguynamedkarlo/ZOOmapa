@@ -65,6 +65,7 @@ svg {
 .dropdown-container {
   z-index: 1000000;
 }
+
 @media screen and (max-width: 1170px) {
   .search-results {
     top: 11vh !important;
@@ -86,7 +87,7 @@ svg {
     margin: 10px;
     height: 1.9rem;
     padding: 0.5rem;
-    width: 21rem;
+    width: 18rem;
     background-color: #181818;
     color: #181818;
     border-width: 0px;
@@ -136,7 +137,6 @@ svg {
   flex-direction: column;
   z-index: 1090;
   position: absolute;
-  visibility: hidden;
 }
 .search-result {
   margin: 4px 0 0 0;

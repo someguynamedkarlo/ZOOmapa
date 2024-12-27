@@ -35,7 +35,7 @@ const MapComponent = ({
   useEffect(() => {
     setFilteredData(data);
   }, [data]);
-
+  const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.setView(new L.LatLng(mapCenter[0], mapCenter[1]), 17);
@@ -60,7 +60,7 @@ const MapComponent = ({
       zoomControl={false}
     >
       <TileLayer
-        url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+        url={`https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
         attribution="&copy; OpenStreetMap contributors"
       />
       <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={true}>
