@@ -13,7 +13,7 @@ function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
   const categoryMappings: { [key: string]: string } = {
     "Hitno!": "HITNA MEDICINSKA POMOĆ",
     "Bolnice i ordinacije": "BOLNICE",
-    Ljekarne: "LJEKARNE S DEŽURSTVIMA",
+    Ljekarne: "LJEKARNE BEZ DEŽURSTAVA",
     Veterinari: "VETERINARI",
   };
 

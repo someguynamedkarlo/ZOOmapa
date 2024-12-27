@@ -5,7 +5,6 @@ import { popisUsluga } from "./Usluge";
 import "./CSS/App.css";
 import ScrollableMenu from "./ScrollableMenu";
 import L from "leaflet";
-const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 
 const filterMappingCost = {
   Besplatno: 0,
@@ -19,26 +18,26 @@ const filterMappingTime = {
   "Rad nedjeljom": 2,
 };
 const lokacijeMapping = {
-  "zdravstveno osiguranje": 1,
-  "USLUGE (SPECIFIČNO) ZA MLADE": 2,
-  "USLUGE (SPECIFIČNO) ZA DJECU": 3,
-  "PREVENCIJA - PROMICANJE ZDRAVLJA I SUZBIJANJE BOLESTI": 4,
-  "ZDRAVSTVENI ODGOJ I OBRAZOVANJE": 5,
-  "OBITELJSKA MEDICINA / OPĆA PRAKSA": 6,
-  "HITNA MEDICINSKA POMOĆ": 7,
-  BOLNICE: 8,
-  "PSIHIJATRIJSKO LIJEČENJE": 9,
-  "PSIHOLOŠKO SAVJETOVANJE/POMOĆ": 10,
-  "OSTALE SPECIJALIZIRANE USLUGE SAVJETOVANJA": 11,
-  "PODRŠKA OVISNICIMA": 12,
-  "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": 13,
-  "PODRŠKA OBOLJELIMA I REHABILITACIJA": 14,
-  STOMATOLOZI: 15,
-  "LJEKARNE S DEŽURSTVIMA": 16,
-  "LJEKARNE BEZ DEŽURSTAVA": 17,
-  VETERINARI: 18,
-  "PRIVATNE BOLNICE I POLIKLINIKE": 19,
-  "OSTALE USLUGE - NEKATEGORIZIRANO": 20,
+  "zdravstveno osiguranje": 0,
+  "USLUGE (SPECIFIČNO) ZA MLADE": 1,
+  "USLUGE (SPECIFIČNO) ZA DJECU": 2,
+  "PREVENCIJA - PROMICANJE ZDRAVLJA I SUZBIJANJE BOLESTI": 3,
+  "ZDRAVSTVENI ODGOJ I OBRAZOVANJE": 4,
+  "OBITELJSKA MEDICINA / OPĆA PRAKSA": 5,
+  "HITNA MEDICINSKA POMOĆ": 6,
+  BOLNICE: 7,
+  "PSIHIJATRIJSKO LIJEČENJE": 8,
+  "PSIHOLOŠKO SAVJETOVANJE/POMOĆ": 9,
+  "OSTALE SPECIJALIZIRANE USLUGE SAVJETOVANJA": 10,
+  "PODRŠKA OVISNICIMA": 11,
+  "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": 12,
+  "PODRŠKA OBOLJELIMA I REHABILITACIJA": 13,
+  STOMATOLOZI: 14,
+  "LJEKARNE S DEŽURSTVIMA": 15,
+  "LJEKARNE BEZ DEŽURSTAVA": 16,
+  VETERINARI: 17,
+  "PRIVATNE BOLNICE I POLIKLINIKE": 18,
+  "OSTALE USLUGE - NEKATEGORIZIRANO": 19,
 };
 
 function App() {
@@ -242,21 +241,15 @@ function App() {
   }, [selectedFilters, searchTerm]); // Call the function when filters or search term change
 
   return (
-    <div style={{ height: "100%" }}>
+    <div id="app">
       <div className="gore">
-        <div style={{ position: "relative", display: "inline-block" }}>
+        <div id="searchbar-container">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             width="20"
             height="20"
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: "20px",
-              transform: "translateY(-50%)",
-              fill: "#fff",
-            }}
+            id="search-icon"
           >
             <path
               fill="none"
@@ -270,7 +263,6 @@ function App() {
             id="searchbar"
             value={searchTerm}
             onChange={handleSearchChange}
-            style={{ paddingRight: "20px" }}
             placeholder="Search..."
           />
         </div>

@@ -12,7 +12,7 @@ import obslik from "./icons/ob.webp";
 import hitno from "./icons/hitno.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
-
+const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 const MapComponent = ({
   mapCenter,
   data,
@@ -23,15 +23,16 @@ const MapComponent = ({
   mapRef: React.RefObject<L.Map>; // Ref type without null
 }) => {
   const iconMapping: { [key: number]: string } = {
-    8: bolnicaslik,
-    6: domslik,
-    7: hitno,
+    7: bolnicaslik,
+    5: domslik,
+    6: hitno,
+    15: ljekarnaslik,
     16: ljekarnaslik,
-    19: polislik,
-    15: orto,
-    4: prevencijaslik,
-    9: psihoslik,
-    5: obslik,
+    18: polislik,
+    14: orto,
+    3: prevencijaslik,
+    8: psihoslik,
+    4: obslik,
   };
   const [filteredData, setFilteredData] = useState<any[]>(data);
   const markersRef = useRef<any[]>([]);
@@ -64,10 +65,10 @@ const MapComponent = ({
       zoomControl={false}
     >
       <TileLayer
-        url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png`}
+        url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
         attribution="&copy; OpenStreetMap contributors"
       />
-      <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={true}>
+      <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={false}>
         {filteredData.map((location, index) => (
           <Marker
             key={index}
