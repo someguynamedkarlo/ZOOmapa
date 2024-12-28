@@ -222,6 +222,10 @@ svg {
   border: none;
 }
 
+.scroll-item.active {
+  background: #3e3e3e;
+}
+
 .scroll-stuff {
   display: flex;
   align-items: center;

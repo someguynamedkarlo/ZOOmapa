@@ -70,19 +70,34 @@ function App() {
   const [topResults, setTopResults] = useState<Usluga[]>([]);
 
   const handleButtonClick = (categoryLabel: string) => {
-    // Find the correct mapped value for the label
     const mappedCategory = Object.entries(lokacijeMapping).find(
       ([key]) => key.trim().toLowerCase() === categoryLabel.trim().toLowerCase()
     )?.[1];
 
-    if (mappedCategory) {
-      setSelectedFilters({
-        Lokacije: [categoryLabel], // Update Lokacije filter with the clicked category
+    if (mappedCategory !== undefined) {
+      setSelectedFilters((prevFilters) => {
+        const currentLocations = prevFilters.Lokacije || [];
+
+        // Check if the clicked category is already in the filter
+        if (currentLocations.includes(categoryLabel)) {
+          // Remove the category if it's already selected
+          return {
+            ...prevFilters,
+            Lokacije: currentLocations.filter((loc) => loc !== categoryLabel),
+          };
+        } else {
+          // Add the category to the selected filters
+          return {
+            ...prevFilters,
+            Lokacije: [...currentLocations, categoryLabel],
+          };
+        }
       });
     } else {
       console.error(`Category "${categoryLabel}" not found in mapping.`);
     }
   };
+
   const markersRef = useRef<L.Marker[]>([]); // Add this at the beginning
 
   const mapRef = useRef<L.Map | null>(null);

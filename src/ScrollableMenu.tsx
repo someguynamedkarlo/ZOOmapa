@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import "./CSS/App.css";
 import "./CSS/menu.css";
 
@@ -8,6 +8,7 @@ interface ScrollableMenuProps {
 
 function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeButton, setActiveButton] = useState<string | null>(null);
 
   // Mapping button labels to actual category values
   const categoryMappings: { [key: string]: string } = {
@@ -34,6 +35,17 @@ function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
     }
   };
 
+  const handleButtonClick = (item: string) => {
+    if (activeButton === item) {
+      // Deselect if clicked again
+      onCategoryClick(categoryMappings[item]);
+      setActiveButton(null);
+    } else {
+      onCategoryClick(categoryMappings[item]);
+      setActiveButton(item);
+    }
+  };
+
   return (
     <div className="scroll-stuff">
       <button
@@ -47,8 +59,8 @@ function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
         {Object.keys(categoryMappings).map((item) => (
           <button
             key={item}
-            className="scroll-item"
-            onClick={() => onCategoryClick(categoryMappings[item])} // Pass the correct label
+            className={`scroll-item ${activeButton === item ? "active" : ""}`}
+            onClick={() => handleButtonClick(item)}
           >
             {item}
           </button>
