@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import psihoslik from "./icons/psiho.webp";
@@ -12,6 +12,7 @@ import obslik from "./icons/ob.webp";
 import hitno from "./icons/hitno.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
+import ButonC from "./butonC";
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 const MapComponent = ({
   mapCenter,
@@ -21,6 +22,7 @@ const MapComponent = ({
   mapCenter: [number, number];
   data: any[]; // Consider typing this as Usluga[] if possible
   mapRef: React.RefObject<L.Map>; // Ref type without null
+  children?: ReactNode;
 }) => {
   const iconMapping: { [key: number]: string } = {
     7: bolnicaslik,
@@ -49,7 +51,7 @@ const MapComponent = ({
 
   const handleMarkerClick = (lat: number, lng: number, index: number) => {
     if (mapRef.current) {
-      mapRef.current.setView(new L.LatLng(lat, lng), 17);
+      mapRef.current.setView(new L.LatLng(lat, lng), 18);
       markersRef.current[index].openPopup();
     }
   };
@@ -68,7 +70,11 @@ const MapComponent = ({
         url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
         attribution="&copy; OpenStreetMap contributors"
       />
-      <MarkerClusterGroup maxClusterRadius={25} spiderfyOnMaxZoom={false}>
+      <MarkerClusterGroup
+        maxClusterRadius={25}
+        spiderfyOnMaxZoom={false}
+        disableClusteringAtZoom={17}
+      >
         {filteredData.map((location, index) => (
           <Marker
             key={index}
@@ -121,6 +127,7 @@ const MapComponent = ({
           </Marker>
         ))}
       </MarkerClusterGroup>
+      <ButonC />
     </MapContainer>
   );
 };

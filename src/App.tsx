@@ -5,7 +5,7 @@ import { popisUsluga } from "./Usluge";
 import "./CSS/App.css";
 import ScrollableMenu from "./ScrollableMenu";
 import L from "leaflet";
-
+import ButonC from "./butonC";
 const filterMappingCost = {
   Besplatno: 0,
   "Naplata sukladno cjeniku usluga": 1,
@@ -59,6 +59,7 @@ function App() {
     email: string;
     web: string;
     radnoVrijeme: string;
+    radVrijeme2: number;
     preduvjeti: string;
     trosak: number;
     namjenjeno: string;
@@ -166,10 +167,12 @@ function App() {
           // Log the selected options and mapped values
           console.log("Selected Trošak options:", options);
           console.log("Mapped Trošak values:", mappedTime);
-          console.log("Service 'trosak' value:", usluga.trosak);
-
+          console.log("Service 'trosak' value:", usluga.radVrijeme2.toString());
+          if (usluga.radVrijeme2) return true;
           // Check if the mapped options intersect with the "trosak" value of the location
-          return mappedTime.length === 0 || mappedTime.includes(usluga.trosak);
+          return (
+            mappedTime.length === 0 || mappedTime.includes(usluga.radVrijeme2)
+          );
         }
         // Handle filtering for "Lokacije" filter (kategorija array)
         // Handle filtering for "Lokacije" filter (kategorija array)
@@ -305,7 +308,9 @@ function App() {
         mapCenter={mapCenter}
         data={filteredMatches}
         mapRef={mapRef}
-      />
+      >
+        <ButonC></ButonC>
+      </MapComponent>
     </div>
   );
 }
