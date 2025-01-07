@@ -154,7 +154,6 @@
     margin-top: 8px;
   }
   .dropdown-button {
-    padding: 8px 12px;
     background-color: #0e0e0e;
     font-size: 14px;
     color: white;
@@ -168,11 +167,6 @@
     border-radius: 20px;
   }
 }
-
-.bbb {
-}
-
-/* CSS */
 
 .button-9:disabled {
   cursor: default;
