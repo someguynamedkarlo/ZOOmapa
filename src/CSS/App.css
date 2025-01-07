@@ -76,7 +76,7 @@ svg {
     visibility: hidden;
   }
   .scroll-stuff {
-    width: 93vw !important;
+    width: 93vw;
   }
   input {
     text-decoration: none;
@@ -105,7 +105,7 @@ svg {
     top: 0;
     left: 0;
     width: 100%;
-    display: flex;
+    display: block;
     align-items: center;
     justify-content: right;
     flex-wrap: wrap;
@@ -235,6 +235,10 @@ svg {
 }
 
 @media (max-width: 767px) {
+  .scroll-stuff {
+    width: 93vw;
+    margin: 0px;
+  }
   .leaflet-popup-content {
     font-size: 12px; /* smaller font size */
     max-width: 250px !important; /* limit the maximum width of the popup */
@@ -242,6 +246,10 @@ svg {
     padding: 10px !important; /* reduce padding */
     max-height: 220px !important; /* maximum height */
     overflow-y: auto !important; /* make content scrollable if it exceeds max height */
+  }
+  #searchbar {
+    margin-left: 0px;
+    width: 300px;
   }
 }
 
@@ -280,7 +288,7 @@ svg {
   font-size: 100%;
   height: 44px;
   line-height: 1.15;
-  margin: 12px 0 0;
+  margin: 10px;
   outline: none;
   overflow: hidden;
   padding: 0 25px;
