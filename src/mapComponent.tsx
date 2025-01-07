@@ -11,7 +11,15 @@ import polislik from "./icons/poli.webp";
 import orto from "./icons/ortodont.webp";
 import obslik from "./icons/ob.webp";
 import hitno from "./icons/hitno.webp";
-import vet from "./icons/veterinari.webp"
+import vet from "./icons/veterinari.webp";
+import podrška from "./icons/podrška.webp"
+import zene from "./icons/zene.webp"
+import psihpomoc from "./icons/psihpomoc.webp"
+import usmladi from "./icons/podrskamladi.webp"
+import usdjeca from "./icons/podrskadjeca.webp"
+import ostalo from "./icons/ostaleusluge.webp"
+import nekategorizirano from "./icons/nekategorizirano.webp"
+import oboljeli from "./icons/oboljeli.webp"
 
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
@@ -29,6 +37,14 @@ const MapComponent = ({
   children?: ReactNode;
 }) => {
   const iconMapping: { [key: number]: string } = {
+    13: oboljeli,
+    19: nekategorizirano,
+    10: ostalo,
+    1: usmladi,
+    2: usdjeca,
+    9: psihpomoc,
+    12: zene,
+    11: podrška,
     17: vet,
     7: bolnicaslik,
     5: domslik,
