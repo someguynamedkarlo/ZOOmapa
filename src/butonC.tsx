@@ -1,5 +1,6 @@
 import { useState } from "react";
-import "./CSS/App.css"; // Make sure to import the CSS for the popup
+import "./CSS/App.css";
+import "./CSS/gore.css";
 
 const ButonC = () => {
   const [popupVisible, setPopupVisible] = useState(false);

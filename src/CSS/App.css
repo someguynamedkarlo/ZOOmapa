@@ -30,19 +30,6 @@ body {
   left: 0;
 }
 
-.gore {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: left;
-  flex-wrap: wrap;
-  background-color: rgba(0, 0, 0, 0); /* Semi-transparent background */
-  padding: 10px;
-  z-index: 1000; /* Ensure it is above the map */
-}
 
 input {
   text-decoration: none;
@@ -63,21 +50,12 @@ svg {
   fill: #ffff;
 }
 
-.dropdown-container {
-  z-index: 1000000;
-}
 
 @media screen and (max-width: 1170px) {
-  .dropdown-container {
-    z-index: 1000000;
-    margin-bottom: 10px;
-  }
   .Title {
     visibility: hidden;
   }
-  .scroll-stuff {
-    width: 93vw;
-  }
+ 
   input {
     text-decoration: none;
     resize: none;
@@ -90,28 +68,6 @@ svg {
     color: #181818;
     border-width: 0px;
     color: white;
-  }
-  .scroll-container {
-    display: flex;
-    align-items: center;
-    overflow-x: auto;
-    gap: 10px; /* Space between items */
-    width: 92%; /* Fixed container width */
-    white-space: nowrap; /* Prevent wrapping of items */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-  }
-  .gore {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: block;
-    align-items: center;
-    justify-content: right;
-    flex-wrap: wrap;
-    background-color: rgba(0, 0, 0, 0); /* Semi-transparent background */
-    padding: 10px;
-    z-index: 1000; /* Ensure it is above the map */
   }
   .search-results {
     list-style: none;
@@ -180,23 +136,6 @@ svg {
   background-color: #c3c3c335;
 }
 
-.scroll-container {
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  gap: 10px; /* Space between items */
-  width: 400px; /* Fixed container width */
-  white-space: nowrap; /* Prevent wrapping of items */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-}
-.scroll-container::-webkit-scrollbar {
-  display: none; /* Hide scrollbar */
-}
-.scroll-container::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Chrome, Safari, and Edge */
-}
-
 .scroll-arrow {
   background-color: rgba(0, 0, 0, 0);
   color: #000000;
@@ -226,19 +165,8 @@ svg {
   background: #3e3e3e;
 }
 
-.scroll-stuff {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-
-  gap: 10px;
-}
 
 @media (max-width: 767px) {
-  .scroll-stuff {
-    width: 93vw;
-    margin: 0px;
-  }
   .leaflet-popup-content {
     font-size: 12px; /* smaller font size */
     max-width: 250px !important; /* limit the maximum width of the popup */
@@ -247,19 +175,10 @@ svg {
     max-height: 220px !important; /* maximum height */
     overflow-y: auto !important; /* make content scrollable if it exceeds max height */
   }
-  #searchbar {
-    margin-left: 0px;
-    width: 300px;
-  }
 }
 
 #app {
   height: 100%;
-}
-
-#searchbar-container {
-  position: relative;
-  display: inline-block;
 }
 
 #search-icon {

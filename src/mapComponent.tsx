@@ -23,6 +23,7 @@ import oboljeli from "./icons/oboljeli.webp"
 
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
+import "./CSS/gore.css";
 import ButonC from "./butonC";
 
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";

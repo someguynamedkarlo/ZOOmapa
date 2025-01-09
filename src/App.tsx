@@ -2,7 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
 import MapComponent from "./mapComponent";
 import { popisUsluga } from "./Usluge";
+
 import "./CSS/App.css";
+import "./CSS/gore.css";
+
 import ScrollableMenu from "./ScrollableMenu";
 import L from "leaflet";
 import ButonC from "./butonC";

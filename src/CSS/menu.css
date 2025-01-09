@@ -10,12 +10,6 @@
   transform: rotate(180deg);
 }
 
-/* Container for dropdown */
-.dropdown-container {
-  position: relative;
-  display: inline-block;
-}
-
 /* Button styling */
 .dropdown-button {
   padding: 8px 12px;
@@ -47,9 +41,9 @@
   margin-top: 8px;
 }
 
-/* Show dropdown menu when toggled */
 .dropdown-menu.show {
   display: block;
+  border-radius: 15px;
 }
 
 /* Dropdown option styling */

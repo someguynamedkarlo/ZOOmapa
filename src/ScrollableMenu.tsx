@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import "./CSS/App.css";
 import "./CSS/menu.css";
+import "./CSS/gore.css";
 
 interface ScrollableMenuProps {
   onCategoryClick: (categoryLabel: string) => void;

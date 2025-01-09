@@ -1,0 +1,80 @@
+.gore {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    flex-wrap: wrap;
+    background-color: rgba(0, 0, 0, 0);
+    padding: 10px;
+    z-index: 1000; /* Ensure it is above the map */
+}
+
+#searchbar {
+    height: 32px;
+}
+
+#searchbar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+    z-index: 1000000;
+}
+
+.scroll-stuff {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    gap: 10px;
+    width: 500px;
+}
+
+.scroll-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* @media screen and (min-width: 1024px) {
+
+} */
+
+@media screen and (max-width: 1170px) {
+    .gore {
+      display: block;
+      justify-content: right;
+    }
+    .dropdown-container {
+        margin-bottom: 10px;
+    }
+
+    .scroll-stuff {
+        width: 93vw;
+    }
+   .scroll-container {
+        overflow-x: auto;
+        white-space: nowrap; /* Prevent wrapping of items */
+    }
+}
+
+@media (max-width: 767px) {
+    .scroll-stuff {
+      width: 93vw;
+      margin: 0px;
+    }
+
+    #searchbar {
+        margin-left: 0px;
+        width: 300px;
+    }
+}
