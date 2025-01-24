@@ -137,16 +137,12 @@ svg {
   background: #5e8e5e;
 }
 
-
-@media (max-width: 767px) {
-  .leaflet-popup-content {
-    font-size: 12px; /* smaller font size */
-    max-width: 250px !important; /* limit the maximum width of the popup */
-    min-width: 180px !important; /* limit the minimum width of the popup */
-    padding: 10px !important; /* reduce padding */
-    max-height: 220px !important; /* maximum height */
-    overflow-y: auto !important; /* make content scrollable if it exceeds max height */
-  }
+.leaflet-popup-content {
+  max-width: 250px !important; /* limit the maximum width of the popup */
+  min-width: 180px !important; /* limit the minimum width of the popup */
+  padding: 8px !important; /* reduce padding */
+  max-height: 300px !important; /* maximum height */
+  overflow-y: auto !important; /* make content scrollable if it exceeds max height */
 }
 
 #app {
