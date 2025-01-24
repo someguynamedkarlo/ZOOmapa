@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
 import MapComponent from "./mapComponent";
-import { popisUsluga } from "./Usluge";
 
 import "./CSS/App.css";
 import "./CSS/gore.css";
@@ -9,6 +8,8 @@ import "./CSS/gore.css";
 import ScrollableMenu from "./ScrollableMenu";
 import L from "leaflet";
 import ButonC from "./butonC";
+import { Usluga } from "./Usluge";
+import fetchData from "./supabase";
 const filterMappingCost = {
   Besplatno: 0,
   "Naplata sukladno cjeniku usluga": 1,
@@ -44,6 +45,7 @@ const lokacijeMapping = {
 };
 
 function App() {
+  const [popisUsluga, setPopisUsluga] = useState<Usluga[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<{
     [key: string]: string[];
   }>({});
@@ -53,26 +55,8 @@ function App() {
   ]);
   const [filteredMatches, setFilteredMatches] = useState<Usluga[]>([]);
 
-  interface Usluga {
-    imeUstanove: string;
-    lat: number;
-    lng: number;
-    adresa: string;
-    telefon: string;
-    email: string;
-    web: string;
-    radnoVrijeme: string;
-    radVrijeme2: number;
-    preduvjeti: string;
-    trosak: number;
-    namjenjeno: string;
-    opis: string;
-    specUsluga: string;
-    pruzatelj: string;
-    kategorija: number[];
-  }
   const [topResults, setTopResults] = useState<Usluga[]>([]);
-
+  
   const handleButtonClick = (categoryLabel: string) => {
     const mappedCategory = Object.entries(lokacijeMapping).find(
       ([key]) => key.trim().toLowerCase() === categoryLabel.trim().toLowerCase()
@@ -258,8 +242,17 @@ function App() {
     setSelectedFilters(filters);
   };
   useEffect(() => {
+    // Call the function when filters, search term change or when data loads
     updateFilteredMatches();
-  }, [selectedFilters, searchTerm]); // Call the function when filters or search term change
+  }, [selectedFilters, searchTerm, popisUsluga]);
+
+  useEffect(() => {
+    const asyncFetch = async () => {
+      const sveUsluge = await fetchData();
+      setPopisUsluga(sveUsluge);
+    }
+    asyncFetch().catch(console.error);
+  }, []);
 
   return (
     <div id="app">
