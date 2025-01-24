@@ -57,7 +57,7 @@ function App() {
 
   const [topResults, setTopResults] = useState<Usluga[]>([]);
   
-  const handleButtonClick = (categoryLabel: string) => {
+  const handleQuickFilterButtonClick = (categoryLabel: string) => {
     const mappedCategory = Object.entries(lokacijeMapping).find(
       ([key]) => key.trim().toLowerCase() === categoryLabel.trim().toLowerCase()
     )?.[1];
@@ -69,16 +69,18 @@ function App() {
         // Check if the clicked category is already in the filter
         if (currentLocations.includes(categoryLabel)) {
           // Remove the category if it's already selected
-          return {
-            ...prevFilters,
-            Lokacije: currentLocations.filter((loc) => loc !== categoryLabel),
-          };
+          return { Lokacije: [] };
+          // return {
+          //   ...prevFilters,
+          //   Lokacije: currentLocations.filter((loc) => loc !== categoryLabel),
+          // };
         } else {
           // Add the category to the selected filters
-          return {
-            ...prevFilters,
-            Lokacije: [...currentLocations, categoryLabel],
-          };
+          return { Lokacije: [categoryLabel] };
+          // return {
+          //   ...prevFilters,
+          //   Lokacije: [...currentLocations, categoryLabel],
+          // };
         }
       });
     } else {
@@ -283,7 +285,7 @@ function App() {
           </div>
           <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
         </div>
-        <ScrollableMenu onCategoryClick={handleButtonClick} />
+        <ScrollableMenu onCategoryClick={handleQuickFilterButtonClick} />
       </div>
 
       {searchTerm && topResults.length > 0 && (
