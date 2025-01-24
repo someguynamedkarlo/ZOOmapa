@@ -25,6 +25,8 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
 import "./CSS/gore.css";
 import ButonC from "./butonC";
+import { Usluga } from "./Usluge";
+import MarkerPopupOrList from "./MarkerPopupOrList";
 
 const DEFAULT_ZOOM = 14;
 const MIN_ZOOM = 11;
@@ -40,7 +42,7 @@ const MapComponent = ({
   mapRef,
 }: {
   mapCenter: [number, number];
-  data: any[]; // Consider typing this as Usluga[] if possible
+  data: Usluga[]; // Consider typing this as Usluga[] if possible
   mapRef: React.RefObject<L.Map>; // Ref type without null
   children?: ReactNode;
 }) => {
@@ -65,7 +67,7 @@ const MapComponent = ({
     8: psihoslik,
     4: obslik,
   };
-  const [filteredData, setFilteredData] = useState<any[]>(data);
+  const [filteredData, setFilteredData] = useState<Usluga[]>(data);
   const markersRef = useRef<any[]>([]);
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const MapComponent = ({
 
   const handleMarkerClick = (lat: number, lng: number, index: number) => {
     if (mapRef.current) {
-      mapRef.current.setView(new L.LatLng(lat, lng), MAX_ZOOM);
+      mapRef.current.setView(new L.LatLng(lat, lng));
       markersRef.current[index].openPopup();
     }
   };
@@ -113,7 +115,7 @@ const MapComponent = ({
             position={[location.lat, location.lng]}
             icon={L.icon({
               iconUrl:
-                iconMapping[parseInt(location.kategorija[0])] ||
+                iconMapping[location.kategorija[0]] ||
                 "default_icon.png",
               iconSize: [40, 40],
             })}
@@ -123,38 +125,7 @@ const MapComponent = ({
             ref={(el) => (markersRef.current[index] = el)} // Correctly capturing the marker reference
           >
             <Popup>
-              <h3>{location.imeUstanove}</h3>
-              {location.adresa || "Adresa nije dostupna"}
-              <br />
-              {location.telefon || "Kontakt nije dostupan"}
-              <br />
-              <h4>
-                <a
-                  href={location.web}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Web stranica
-                </a>
-              </h4>
-              <p id="p">
-                <h4>Email:</h4> {location.email || "Email nije dostupan"}
-              </p>
-              <p id="p">
-                <h4>Opis:</h4> {location.opis || "Opis nije dostupan"}
-              </p>
-              <p id="p">
-                <h4>Preduvjeti:</h4>{" "}
-                {location.preduvjeti || "Preduvjeti nisu dostupani"}
-              </p>
-              <p id="p">
-                <h4>Specifična usluga:</h4>{" "}
-                {location.specUsluga || "Specifična usluga nije dostupna"}
-              </p>
-              <p id="p">
-                <h4>Radno vrijeme:</h4>{" "}
-                {location.radnoVrijeme || "Radno vrijeme nije dostupno"}
-              </p>
+              <MarkerPopupOrList usluga={location} vidljiveUsluge={filteredData} />
             </Popup>
           </Marker>
         ))}

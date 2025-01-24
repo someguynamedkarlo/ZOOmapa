@@ -253,3 +253,8 @@ svg {
 .close:hover {
   color: red;
 }
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}

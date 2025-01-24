@@ -1,0 +1,17 @@
+
+.popup-list-section {
+  margin-bottom: 0.1rem;
+}
+
+.popup-usluga-header {
+  background-color: #E1E1E1;
+  padding: 7px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-lines: 1;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
