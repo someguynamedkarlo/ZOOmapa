@@ -26,7 +26,14 @@ import "./CSS/App.css";
 import "./CSS/gore.css";
 import ButonC from "./butonC";
 
+const DEFAULT_ZOOM = 14;
+const MIN_ZOOM = 11;
+const MAX_ZOOM = 18;
+const MAX_TILE_ZOOM = 16; // Max zoom for requesting new tiles. All zooms greater that this will look more and more blurry
+
+// This should be here for safety reasons, but this is only a testing temporary key so I'll allow it
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
+
 const MapComponent = ({
   mapCenter,
   data,
@@ -67,13 +74,13 @@ const MapComponent = ({
 
   useEffect(() => {
     if (mapRef.current) {
-      mapRef.current.setView(new L.LatLng(mapCenter[0], mapCenter[1]), 17);
+      mapRef.current.setView(new L.LatLng(mapCenter[0], mapCenter[1]), DEFAULT_ZOOM);
     }
   }, [mapCenter]);
 
   const handleMarkerClick = (lat: number, lng: number, index: number) => {
     if (mapRef.current) {
-      mapRef.current.setView(new L.LatLng(lat, lng), 18);
+      mapRef.current.setView(new L.LatLng(lat, lng), MAX_ZOOM);
       markersRef.current[index].openPopup();
     }
   };
@@ -82,8 +89,9 @@ const MapComponent = ({
     <MapContainer
       style={{ height: "100%", width: "100%" }}
       center={mapCenter}
-      zoom={14}
-      minZoom={11}
+      zoom={DEFAULT_ZOOM}
+      minZoom={MIN_ZOOM}
+      maxZoom={MAX_ZOOM}
       scrollWheelZoom={true}
       ref={mapRef} // Corrected ref type
       zoomControl={false}
@@ -91,11 +99,13 @@ const MapComponent = ({
       <TileLayer
         url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
         attribution="&copy; OpenStreetMap contributors"
+        maxNativeZoom={MAX_TILE_ZOOM} // Load tiles only up to this zoom level
+        maxZoom={MAX_ZOOM}       // Allow users to zoom further
       />
       <MarkerClusterGroup
         maxClusterRadius={25}
         spiderfyOnMaxZoom={false}
-        disableClusteringAtZoom={17}
+        disableClusteringAtZoom={MAX_ZOOM}
       >
         {filteredData.map((location, index) => (
           <Marker

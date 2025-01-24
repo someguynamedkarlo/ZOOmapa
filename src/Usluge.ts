@@ -17,7 +17,7 @@ export type Usluga = {
   kategorija: number[]; // Categories
 };
 /*
-kategorija: [umber[]
+kategorija: number[]
 0-zdravstveno osiguranje
 1- USLUGE (SPECIFIČNO) ZA MLADE
 2 -USLUGE (SPECIFIČNO) ZA DJECU
