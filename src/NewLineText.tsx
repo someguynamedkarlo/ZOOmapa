@@ -6,7 +6,7 @@ type Props = {
 // Supports newline and renders text accordingly
 const NewLineText = ({text}: Props) => {
     return (
-        text.split('\n').map(t => <div>{t}</div>)
+        text.split('\n').map((t, index) => <div key={index}>{t}</div>)
     )
 }
 

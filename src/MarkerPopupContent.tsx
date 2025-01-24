@@ -30,40 +30,40 @@ const MarkerPopupContent = ({usluga}: Props) => {
                   </a>
                 </h4>
             }
-            <p>
+            <div>
               <h4 style={subtitleStyle}>Email:</h4>
               <NewLineText 
                 text={location.email || "Email nije dostupan"}
               />
-            </p>
-            <p>
+            </div>
+            <div>
               <h4 style={subtitleStyle}>Opis:</h4>
               <NewLineText 
                 text={location.opis || "Opis nije dostupan"}
               />
-            </p>
-            <p>
+            </div>
+            <div>
               <h4 style={subtitleStyle}>Preduvjeti:</h4>{" "}
               <NewLineText 
                 text={location.preduvjeti || "Preduvjeti nisu dostupani"}
               />
-            </p>
-            <p>
+            </div>
+            <div>
               <h4 style={subtitleStyle}>Specifična usluga:</h4>{" "}
               <NewLineText 
                 text={location.specUsluga || "Specifična usluga nije dostupna"}
               />
-            </p>
-            <p>
+            </div>
+            <div>
               <h4 style={subtitleStyle}>Radno vrijeme:</h4>{" "}
               <NewLineText 
                 text={location.radnoVrijeme || "Radno vrijeme nije dostupno"}
               />
-            </p>
+            </div>
         </div>
     )
 }
 
-const subtitleStyle: CSSProperties = { fontWeight: "bold", fontSize: 14 };
+const subtitleStyle: CSSProperties = { fontWeight: "bold", fontSize: 14, marginTop: 12 };
 
 export default MarkerPopupContent;
