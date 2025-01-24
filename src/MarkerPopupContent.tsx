@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import { Usluga } from "./Usluge";
 
 type Props = {
@@ -7,14 +8,14 @@ type Props = {
 const MarkerPopupContent = ({usluga}: Props) => {
     const location = usluga;
     return (
-        <>
+        <div style={{ fontSize: 14 }}>
             <h3>{location.imeUstanove}</h3>
             {location.adresa || "Adresa nije dostupna"}
             <br />
             {location.telefon || "Kontakt nije dostupan"}
             <br />
             { location.web.trim().length == 0 ||
-                <h4>
+                <h4 style={subtitleStyle}>
                   <a
                     href={location.web}
                     target="_blank"
@@ -24,26 +25,28 @@ const MarkerPopupContent = ({usluga}: Props) => {
                   </a>
                 </h4>
             }
-            <p id="p">
-              <h4>Email:</h4> {location.email || "Email nije dostupan"}
+            <p>
+              <h4 style={subtitleStyle}>Email:</h4> {location.email || "Email nije dostupan"}
             </p>
-            <p id="p">
-              <h4>Opis:</h4> {location.opis || "Opis nije dostupan"}
+            <p>
+              <h4 style={subtitleStyle}>Opis:</h4> {location.opis || "Opis nije dostupan"}
             </p>
-            <p id="p">
-              <h4>Preduvjeti:</h4>{" "}
+            <p>
+              <h4 style={subtitleStyle}>Preduvjeti:</h4>{" "}
               {location.preduvjeti || "Preduvjeti nisu dostupani"}
             </p>
-            <p id="p">
-              <h4>Specifična usluga:</h4>{" "}
+            <p>
+              <h4 style={subtitleStyle}>Specifična usluga:</h4>{" "}
               {location.specUsluga || "Specifična usluga nije dostupna"}
             </p>
-            <p id="p">
-              <h4>Radno vrijeme:</h4>{" "}
+            <p>
+              <h4 style={subtitleStyle}>Radno vrijeme:</h4>{" "}
               {location.radnoVrijeme || "Radno vrijeme nije dostupno"}
             </p>
-        </>
+        </div>
     )
 }
+
+const subtitleStyle: CSSProperties = { fontWeight: "bold", fontSize: 14 };
 
 export default MarkerPopupContent;

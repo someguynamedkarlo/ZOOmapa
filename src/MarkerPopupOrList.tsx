@@ -36,7 +36,7 @@ const MarkerPopupOrList = ({usluga, vidljiveUsluge}: Props) => {
           className="popup-usluga-header"
           onClick={() => toggleExpanded(index)}
         >
-          <span>{u.imeUstanove}</span>
+          <span style={{ fontSize: 14 }}>{u.imeUstanove}</span>
           <i
             className={`fa fa-chevron-${isExpanded[index] ? "up" : "down"} category-icon`}
           />

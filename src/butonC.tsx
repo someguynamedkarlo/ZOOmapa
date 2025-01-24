@@ -30,7 +30,7 @@ const ButonC = () => {
               Interaktivnu mapu zdravstvenih usluga u Rijeci izradili su Luka
               Delak, Karlo Perić, Vanja Petropoli, Adrian Skomerža, Nancy
               Škibola, Jakov Tomasić i Mihael Host uz podršku Centra tehničke
-              kulture Rijeka i Grada Rijeke.
+              kulture Rijeka i Grada Rijeke.
             </p>
           </div>
         </div>

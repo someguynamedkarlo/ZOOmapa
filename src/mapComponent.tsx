@@ -124,7 +124,7 @@ const MapComponent = ({
             }}
             ref={(el) => (markersRef.current[index] = el)} // Correctly capturing the marker reference
           >
-            <Popup>
+            <Popup minWidth={100}>
               <MarkerPopupOrList usluga={location} vidljiveUsluge={filteredData} />
             </Popup>
           </Marker>
