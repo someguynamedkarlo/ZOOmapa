@@ -4,21 +4,37 @@
     left: 0;
     width: 100%;
     display: flex;
-    align-items: center;
+    flex-direction: row;
     justify-content: left;
-    flex-wrap: wrap;
     background-color: rgba(0, 0, 0, 0);
     padding: 10px;
     z-index: 1000; /* Ensure it is above the map */
 }
 
-#searchbar {
-    height: 32px;
+.moblina-prvi-redak {
+    flex: 0;
+    display: flex;
+    flex-direction: row;
 }
 
 #searchbar-container {
     position: relative;
     display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.search-input-field {
+    text-decoration: none;
+    resize: none;
+    border-radius: 20px;
+    height: 100%;
+    padding: 0.5rem;
+    width: 17rem;
+    background-color: #181818;
+    color: #181818;
+    border-width: 0px;
+    color: white;
+    padding-right: 20p;
 }
 
 .dropdown-container {
@@ -32,7 +48,7 @@
     align-items: center;
     margin-left: 10px;
     gap: 10px;
-    width: 500px;
+    width: 100%;
 }
 
 .scroll-container {
@@ -51,30 +67,34 @@
 
 @media screen and (max-width: 1170px) {
     .gore {
-      display: block;
-      justify-content: right;
+        display: flex;
+        flex-direction: column;
     }
+
     .dropdown-container {
-        margin-bottom: 10px;
+        display: flex;
+        flex-direction: row;
+    }
+
+    #searchbar-container {
+        flex: 1;
+    }
+
+    .moblina-prvi-redak {
+        flex: 1;
+    }
+
+    .search-input-field {
+        width: 100%;
+        flex: 1;
     }
 
     .scroll-stuff {
-        width: 93vw;
+        margin: 0px;
     }
-   .scroll-container {
+
+    .scroll-container {
         overflow-x: auto;
         white-space: nowrap; /* Prevent wrapping of items */
-    }
-}
-
-@media (max-width: 767px) {
-    .scroll-stuff {
-      width: 93vw;
-      margin: 0px;
-    }
-
-    #searchbar {
-        margin-left: 0px;
-        width: 300px;
     }
 }

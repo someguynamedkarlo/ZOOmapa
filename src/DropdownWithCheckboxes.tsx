@@ -96,7 +96,9 @@ function DropdownWithCheckboxes({ onFilterChange }: DropdownProps) {
   return (
     <div className="dropdown-container">
       <button className="dropdown-button" onClick={toggleDropdown}>
-        Filteri{" "}
+        <div style={{ marginRight: 10 }}>
+          Filteri{" "}
+        </div>
         <i className={`fa fa-chevron-down ${dropdownVisible ? "open" : ""}`} />
       </button>
       <div className={`dropdown-menu ${dropdownVisible ? "show" : ""}`}>

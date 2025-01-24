@@ -18,6 +18,7 @@
   color: white;
   cursor: pointer;
   width: 350px;
+  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -120,6 +121,15 @@
   height: 15px;
   border: 3px solid #383838;
   margin-right: 7px;
+
+  text-decoration: none;
+  resize: none;
+  border-radius: 20px;
+  margin: 10px;
+  padding: 0.5rem;
+  background-color: #181818;
+  border-width: 0px;
+  padding-right: 20p;
 }
 
 .filter-options {
@@ -152,13 +162,24 @@
     font-size: 14px;
     color: white;
     cursor: pointer;
-    width: 300px;
+    width: auto;
+    flex: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 100;
     border-width: 0px;
     border-radius: 20px;
+  }
+  
+  .checkbox {
+    text-decoration: none;
+    resize: none;
+    border-radius: 20px;
+    margin: 10px;
+    padding: 0.5rem;
+    background-color: #181818;
+    border-width: 0px;
   }
 }
 

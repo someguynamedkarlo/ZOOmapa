@@ -264,30 +264,32 @@ function App() {
   return (
     <div id="app">
       <div className="gore">
-        <div id="searchbar-container">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
-            id="search-icon"
-          >
-            <path
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              d="M21 21l-6-6M9 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"
+        <div className="moblina-prvi-redak">
+          <div id="searchbar-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              id="search-icon"
+            >
+              <path
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                d="M21 21l-6-6M9 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"
+              />
+            </svg>
+            <input
+              type="text"
+              className="search-input-field"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Search..."
             />
-          </svg>
-          <input
-            type="text"
-            id="searchbar"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Search..."
-          />
+          </div>
+          <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
         </div>
-        <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
         <ScrollableMenu onCategoryClick={handleButtonClick} />
       </div>
 
