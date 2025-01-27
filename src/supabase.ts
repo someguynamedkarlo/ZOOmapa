@@ -32,18 +32,17 @@ function conform(s: string): string {
 const fetchData = async (): Promise<Usluga[]> => {
   try {
     const response = await fetch("/BAZA3.json");
-    const data = await response.json();
+    const data = await response.json() as any[];
     
-    const result: Usluga[] = []
-    
-    for (const u of data) {
+    const result: Usluga[] = data.map((u: any, index) => {
       const lat = parseFloat(u.lat);
       const lng = parseFloat(u.lng);
       const kategorija = parseInt(u.kategorija);
 
-      if (isNaN(lat) || isNaN(lng) || isNaN(kategorija)) continue;
+      if (isNaN(lat) || isNaN(lng) || isNaN(kategorija)) return null;
 
       const converted: Usluga = {
+        id: index + 1,
         imeUstanove: conform(u.imeUstanove),
         lat: lat,
         lng: lng,
@@ -66,9 +65,10 @@ const fetchData = async (): Promise<Usluga[]> => {
         pruzatelj: conform(u.pruzatelj),
         kategorija: [kategorija],
       }
-      result.push(converted);
-    }
-
+      return converted;
+    })
+    .filter(u => u !== null);
+    
     return result;
   } catch (err) {
     console.error("Error fetching data:", err);

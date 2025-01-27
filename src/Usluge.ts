@@ -1,4 +1,5 @@
 export type Usluga = {
+  id: number;
   imeUstanove: string;
   lat: number;
   lng: number;

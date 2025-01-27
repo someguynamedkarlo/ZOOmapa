@@ -85,11 +85,14 @@ svg {
   z-index: 1090;
   position: absolute;
   background-color: #181818;
+  
+  max-height: 70%;
+  overflow-y: scroll;
 }
+
 .search-result {
   margin: 4px 0 0 0;
-}
-.search-result {
+
   text-decoration: none;
   background-color: #181818;
   padding: 8px;

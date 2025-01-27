@@ -44,6 +44,25 @@ const lokacijeMapping = {
   "OSTALE USLUGE - NEKATEGORIZIRANO": 19,
 };
 
+// Return lower number to appear before in the search result
+// Return null if the search is no match
+function searchResultSortNumber(usluga: Usluga, searchText: string): number | null {
+  const search = searchText.trim().toLocaleLowerCase();
+  if (search.length < 2) return null;
+  else if (usluga.imeUstanove.trim().toLocaleLowerCase().includes(search)) return 1;
+  else if (usluga.pruzatelj.trim().toLocaleLowerCase().includes(search)) return 2;
+  else if (usluga.opis.trim().toLocaleLowerCase().includes(search)) return 3;
+  else if (usluga.specUsluga.trim().toLocaleLowerCase().includes(search)) return 4;
+  else if (usluga.adresa.trim().toLocaleLowerCase().includes(search)) return 5;
+  else if (usluga.telefon.trim().toLocaleLowerCase().includes(search)) return 6;
+  else if (usluga.email.trim().toLocaleLowerCase().includes(search)) return 7;
+  else if (usluga.web.trim().toLocaleLowerCase().includes(search)) return 8;
+  else if (usluga.radnoVrijeme.trim().toLocaleLowerCase().includes(search)) return 9;
+  else if (usluga.preduvjeti.trim().toLocaleLowerCase().includes(search)) return 10;
+  else if (usluga.namjenjeno.trim().toLocaleLowerCase().includes(search)) return 11;
+  else return null
+}
+
 function App() {
   const [popisUsluga, setPopisUsluga] = useState<Usluga[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<{
@@ -56,6 +75,9 @@ function App() {
   const [filteredMatches, setFilteredMatches] = useState<Usluga[]>([]);
 
   const [topResults, setTopResults] = useState<Usluga[]>([]);
+  const [idToOpenPopup, setIdToOpenPopup] = useState<number | null>(null);
+
+  const isSearchingText = searchTerm.length > 2;
   
   const handleQuickFilterButtonClick = (categoryLabel: string) => {
     const mappedCategory = Object.entries(lokacijeMapping).find(
@@ -87,8 +109,6 @@ function App() {
       console.error(`Category "${categoryLabel}" not found in mapping.`);
     }
   };
-
-  const markersRef = useRef<L.Marker[]>([]); // Add this at the beginning
 
   const mapRef = useRef<L.Map | null>(null);
 
@@ -213,30 +233,39 @@ function App() {
     return matchesSearch && matchesFilters; // Return true if both search and filters match
   };
 
-  // Ensure `searchTerm` is considered in `updateFilteredMatches`
   const updateFilteredMatches = () => {
-    const filteredData = popisUsluga.filter((usluga: Usluga) =>
-      spadaLiUFilter(usluga, selectedFilters)
-    );
+    
+    type sortAndUsluga = { sort: number, u: Usluga };
+    if (isSearchingText) {
+      const filteredData: sortAndUsluga[] = popisUsluga
+        .map((u) => ({ sort: searchResultSortNumber(u, searchTerm), u: u }))
+        .filter(u => u.sort !== null)
+        .map(u => u as sortAndUsluga);
 
-    setFilteredMatches(filteredData);
+      setFilteredMatches(filteredData.map(element => element.u));
 
-    // Sort and get the top results
-    const sortedData = filteredData.sort((a, b) =>
-      a.imeUstanove.localeCompare(b.imeUstanove)
-    );
-    setTopResults(sortedData.slice(0, 4)); // Update topResults with top 4 matches
+      const sortedData = filteredData.sort((a, b) => a.sort - b.sort);
+      setTopResults(sortedData.map(element => element.u));
+    } else {
+      const filteredData = popisUsluga.filter((usluga: Usluga) =>
+        spadaLiUFilter(usluga, selectedFilters)
+      );
+      setFilteredMatches(filteredData);
+      setTopResults([]);
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-  };
-  const handleSearchResultClick = (lat: number, lng: number, index: number) => {
-    if (mapRef.current) {
-      mapRef.current.setView(new L.LatLng(lat, lng), 17); // Zoom to the clicked location
-      // Correcting the popup handling to open for the correct marker
-      markersRef.current[index]?.openPopup(); // Safe check before opening the popup
+    if (e.target.value.length > 0) {
+      setIdToOpenPopup(null);
     }
+  };
+  const handleSearchResultClick = (lat: number, lng: number, id: number) => {
+    if (mapRef.current) {
+      mapRef.current.setView(new L.LatLng(lat, lng), 18); // Zoom to the clicked location
+    }
+    setIdToOpenPopup(id)
     setSearchTerm("");
   };
 
@@ -261,19 +290,17 @@ function App() {
       <div className="gore">
         <div className="moblina-prvi-redak">
           <div id="searchbar-container">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              id="search-icon"
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+              width="20" height="20" id="search-icon"
+              onClick={() => setSearchTerm("")}
             >
-              <path
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                d="M21 21l-6-6M9 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"
-              />
+            {/* From https://fontawesome.com/search?ip=classic&s=solid&o=r */}
+            {/* <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--> */}
+            { isSearchingText ?
+              <path fill="white" stroke="white" d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+              :
+              <path fill="white" stroke="white" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+            }
             </svg>
             <input
               type="text"
@@ -288,19 +315,27 @@ function App() {
         <ScrollableMenu onCategoryClick={handleQuickFilterButtonClick} />
       </div>
 
-      {searchTerm && topResults.length > 0 && (
+      { isSearchingText && (
         <ul className="search-results">
-          {topResults.map((result, index) => (
+          { topResults.map(result => (
             <li
-              key={result.imeUstanove}
+              key={result.id}
               className="search-result"
               onClick={() =>
-                handleSearchResultClick(result.lat, result.lng, index)
-              } // pass index
+                handleSearchResultClick(result.lat, result.lng, result.id)
+              }
             >
               {result.imeUstanove} ({result.adresa})
             </li>
           ))}
+          { topResults.length === 0 && isSearchingText &&
+            <li
+              key={"no-results"}
+              className="search-result"
+            >
+              Nema rezultata
+            </li>
+          }
         </ul>
       )}
 
@@ -308,6 +343,7 @@ function App() {
         mapCenter={mapCenter}
         data={filteredMatches}
         mapRef={mapRef}
+        idToOpenPopup={idToOpenPopup}
       >
         <ButonC></ButonC>
       </MapComponent>

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 
@@ -20,6 +20,7 @@ import usdjeca from "./icons/podrskadjeca.webp"
 import ostalo from "./icons/ostaleusluge.webp"
 import nekategorizirano from "./icons/nekategorizirano.webp"
 import oboljeli from "./icons/oboljeli.webp"
+import ostaleusluge from "./icons/ostaleusluge.webp"
 
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
@@ -40,13 +41,17 @@ const MapComponent = ({
   mapCenter,
   data,
   mapRef,
+  idToOpenPopup,
 }: {
   mapCenter: [number, number];
   data: Usluga[]; // Consider typing this as Usluga[] if possible
   mapRef: React.RefObject<L.Map>; // Ref type without null
   children?: ReactNode;
+  idToOpenPopup: number | null,
 }) => {
   const iconMapping: { [key: number]: string } = {
+    0: ostaleusluge,
+
     13: oboljeli,
     19: nekategorizirano,
     10: ostalo,
@@ -69,6 +74,8 @@ const MapComponent = ({
   };
   const [filteredData, setFilteredData] = useState<Usluga[]>(data);
   const markersRef = useRef<any[]>([]);
+  // Overwrite popup id when user clicks something else
+  const [ignoreIdToOpenPopup, setIgnoreIdToOpenPopup] = useState<boolean>(false);
 
   useEffect(() => {
     setFilteredData(data);
@@ -79,13 +86,29 @@ const MapComponent = ({
       mapRef.current.setView(new L.LatLng(mapCenter[0], mapCenter[1]), DEFAULT_ZOOM);
     }
   }, [mapCenter]);
+  
+  const openPopup = (id: number) => {
+    // console.log("current: ", markersRef.current)
+    if (markersRef.current) {
+      // console.log("current[id]: ", markersRef.current[id])
+      markersRef.current[id]?.openPopup();
+    }
+  }
 
-  const handleMarkerClick = (lat: number, lng: number, index: number) => {
+  const handleMarkerClick = (lat: number, lng: number, id: number) => {
+    setIgnoreIdToOpenPopup(true);
     if (mapRef.current) {
       mapRef.current.setView(new L.LatLng(lat, lng));
-      markersRef.current[index].openPopup();
+      openPopup(id);
     }
   };
+
+  useEffect(() => {
+    setIgnoreIdToOpenPopup(false);
+    if (idToOpenPopup !== null) {
+      openPopup(idToOpenPopup)
+    }
+  }, [idToOpenPopup])
 
   return (
     <MapContainer
@@ -109,9 +132,9 @@ const MapComponent = ({
         spiderfyOnMaxZoom={false}
         disableClusteringAtZoom={MAX_ZOOM}
       >
-        {filteredData.map((location, index) => (
+        {filteredData.map(location => (
           <Marker
-            key={index}
+            key={location.id}
             position={[location.lat, location.lng]}
             icon={L.icon({
               iconUrl:
@@ -120,12 +143,20 @@ const MapComponent = ({
               iconSize: [40, 40],
             })}
             eventHandlers={{
-              click: () => handleMarkerClick(location.lat, location.lng, index),
+              click: () => handleMarkerClick(location.lat, location.lng, location.id),
             }}
-            ref={(el) => (markersRef.current[index] = el)} // Correctly capturing the marker reference
+            ref={(el) => {
+              // Correctly capturing the marker reference
+              if (el) {
+                markersRef.current[location.id] = el;
+                if (location.id === idToOpenPopup) {
+                  openPopup(location.id);
+                }
+              }
+            }}
           >
             <Popup minWidth={100}>
-              <MarkerPopupOrList usluga={location} vidljiveUsluge={filteredData} />
+              <MarkerPopupOrList usluga={location} vidljiveUsluge={idToOpenPopup !== null && !ignoreIdToOpenPopup ? [location] : filteredData} />
             </Popup>
           </Marker>
         ))}
