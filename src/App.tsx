@@ -137,9 +137,9 @@ function App() {
             .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
 
           // Log the selected options and mapped values
-          console.log("Selected Trošak options:", options);
-          console.log("Mapped Trošak values:", mappedTrosak);
-          console.log("Service 'trosak' value:", usluga.trosak);
+          // console.log("Selected Trošak options:", options);
+          // console.log("Mapped Trošak values:", mappedTrosak);
+          // console.log("Service 'trosak' value:", usluga.trosak);
 
           // Check if the mapped options intersect with the "trosak" value of the location
           return (
@@ -147,8 +147,8 @@ function App() {
           );
         }
         if (category === "Vrsta korisnika") {
-          console.log("Checking Vrste korisnika filter options:", options);
-          console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
+          // console.log("Checking Vrste korisnika filter options:", options);
+          // console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
 
           // Check if any of the selected options match the 'namjenjeno' field of the service
           return options.some((option) =>
@@ -157,8 +157,8 @@ function App() {
         }
 
         if (category === "Ustanova pružanja usluge") {
-          console.log("Checking Vrste korisnika filter options:", options);
-          console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
+          // console.log("Checking Vrste korisnika filter options:", options);
+          // console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
 
           // Check if any of the selected options match the 'namjenjeno' field of the service
           return options.some((option) =>
@@ -174,9 +174,9 @@ function App() {
             .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
 
           // Log the selected options and mapped values
-          console.log("Selected Trošak options:", options);
-          console.log("Mapped Trošak values:", mappedTime);
-          console.log("Service 'trosak' value:", usluga.radVrijeme2.toString());
+          // console.log("Selected Trošak options:", options);
+          // console.log("Mapped Trošak values:", mappedTime);
+          // console.log("Service 'trosak' value:", usluga.radVrijeme2.toString());
           if (usluga.radVrijeme2) return true;
           // Check if the mapped options intersect with the "trosak" value of the location
           return (
@@ -196,19 +196,19 @@ function App() {
                 ([key]) => key.trim().toLowerCase() === normalizedOption
               )?.[1];
 
-              console.log(`Mapping option "${option}" to "${mappedValue}"`);
+              // console.log(`Mapping option "${option}" to "${mappedValue}"`);
               return mappedValue ?? -1; // Fallback for unmapped
             })
             .filter((value) => value !== -1); // Remove invalid mappings
 
-          console.log("Mapped location values (normalized):", locationValues);
+          // console.log("Mapped location values (normalized):", locationValues);
 
           const matchesLocation = locationValues.some((locValue) =>
             usluga.kategorija.includes(locValue)
           );
 
-          console.log("Service's kategorija:", usluga.kategorija);
-          console.log("Matches location filter:", matchesLocation);
+          // console.log("Service's kategorija:", usluga.kategorija);
+          // console.log("Matches location filter:", matchesLocation);
 
           return locationValues.length === 0 || matchesLocation;
         }
