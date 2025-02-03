@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { Usluga } from "./Usluge";
+import { kategorijaKorisnikaToString, tipVlasnikaToString, trosakKorisnikaToString, Usluga } from "./Usluge";
 import NewLineText from "./NewLineText";
 
 type Props = {
@@ -8,27 +8,71 @@ type Props = {
 
 const MarkerPopupContent = ({usluga}: Props) => {
     const location = usluga;
+    const allWebsites = usluga.web.trim().split('\n').filter(w => w.length > 0);
+    const moreInfo = function() {
+      let result = "";
+      const tipVlasnika = usluga.javnoIliPrivatno === null ? null : tipVlasnikaToString(usluga.javnoIliPrivatno);
+      const kategorijaKorisnika = usluga.kategorijaKorisnika === null ? null : kategorijaKorisnikaToString(usluga.kategorijaKorisnika);
+      const trosakKorisnika = usluga.trosakKorisnika === null ? null : trosakKorisnikaToString(usluga.trosakKorisnika);
+      if (trosakKorisnika !== null) {
+        if (result !== "") {
+          result += "\n";
+        }
+        result += "Cijena: " + trosakKorisnika;
+      }
+      if (kategorijaKorisnika !== null) {
+        if (result !== "") {
+          result += "\n";
+        }
+        result += "Korisnici usluge: " + kategorijaKorisnika;
+      }
+      if (tipVlasnika !== null) {
+        if (result !== "") {
+          result += "\n";
+        }
+        result += "Vlasnik ustanove: " + tipVlasnika;
+      }
+      return result;
+    }();
     return (
         <div style={{ fontSize: 14 }}>
             <h3>{location.imeUstanove}</h3>
-            <NewLineText 
-              text={location.adresa || "Adresa nije dostupna"}
-            />
+            <div>
+              <h4 style={subtitleStyle}>Usluga:</h4>
+              <NewLineText 
+                text={location.nazivUsluge || "Vrsta usluge nepoznata"}
+              />
+            </div>
+            { location.adresa !== "" &&
+              <NewLineText 
+                text={location.adresa}
+              />
+            }
             <br />
             <NewLineText 
               text={location.telefon || "Kontakt nije dostupan"}
             />
             <br />
-            { location.web.trim().length == 0 ||
-                <h4 style={subtitleStyle}>
-                  <a
-                    href={location.web}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Web stranica
-                  </a>
-                </h4>
+            { moreInfo !== "" &&
+              <>
+                <NewLineText 
+                  text={moreInfo}
+                />
+                <br />
+              </>
+            }
+            { allWebsites.length === 0 ||
+                allWebsites.map((w, i) => {
+                  return (<h4 style={subtitleStyle} key={i}>
+                    <a
+                      href={w}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Web stranica { allWebsites.length > 1 ? i+1 : "" }
+                    </a>
+                  </h4>)
+                })
             }
             <div>
               <h4 style={subtitleStyle}>Email:</h4>
@@ -36,30 +80,23 @@ const MarkerPopupContent = ({usluga}: Props) => {
                 text={location.email || "Email nije dostupan"}
               />
             </div>
-            <div>
-              <h4 style={subtitleStyle}>Opis:</h4>
-              <NewLineText 
-                text={location.opis || "Opis nije dostupan"}
-              />
-            </div>
-            <div>
-              <h4 style={subtitleStyle}>Preduvjeti:</h4>{" "}
-              <NewLineText 
-                text={location.preduvjeti || "Preduvjeti nisu dostupani"}
-              />
-            </div>
-            <div>
-              <h4 style={subtitleStyle}>Specifična usluga:</h4>{" "}
-              <NewLineText 
-                text={location.specUsluga || "Specifična usluga nije dostupna"}
-              />
-            </div>
-            <div>
-              <h4 style={subtitleStyle}>Radno vrijeme:</h4>{" "}
-              <NewLineText 
-                text={location.radnoVrijeme || "Radno vrijeme nije dostupno"}
-              />
-            </div>
+            {
+              location.opisUsluge !== "" &&
+              <div>
+                <h4 style={subtitleStyle}>Opis:</h4>
+                <NewLineText 
+                  text={location.opisUsluge}
+                />
+              </div>
+            }
+            { location.dodatneInfo !== "" &&
+              <div>
+                <br/>
+                <NewLineText 
+                  text={location.dodatneInfo}
+                />
+              </div>
+            }
         </div>
     )
 }

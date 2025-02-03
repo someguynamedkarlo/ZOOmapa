@@ -1,16 +1,19 @@
-import { useState } from "react";
 import "./CSS/App.css";
 import "./CSS/gore.css";
 
-const ButonC = () => {
-  const [popupVisible, setPopupVisible] = useState(false);
+type Props = {
+  oKartiPopupVisible: boolean;
+  setOKartiPopupVisible: (visible: boolean) => void;
+}
+
+const ButonC = ({oKartiPopupVisible, setOKartiPopupVisible}: Props) => {
 
   const handleButtonClick = () => {
-    setPopupVisible(true); // Show popup when button is clicked
+    setOKartiPopupVisible(true); // Show popup when button is clicked
   };
 
   const handleClosePopup = () => {
-    setPopupVisible(false); // Hide popup when close button is clicked
+    setOKartiPopupVisible(false); // Hide popup when close button is clicked
   };
 
   return (
@@ -20,7 +23,7 @@ const ButonC = () => {
       </button>
 
       {/* Conditionally render popup */}
-      {popupVisible && (
+      {oKartiPopupVisible && (
         <div className="popup">
           <div className="popup-content">
             <span className="close" onClick={handleClosePopup}>
@@ -28,8 +31,8 @@ const ButonC = () => {
             </span>
             <p>
               Interaktivnu mapu zdravstvenih usluga u Rijeci izradili su Luka
-              Delak, Karlo Perić, Vanja Petropoli, Adrian Skomerža, Nancy
-              Škibola, Jakov Tomasić i Mihael Host uz podršku Centra tehničke
+              Delak, Mihael Host, Karlo Perić, Vanja Petropoli, Adrian Skomerža, Nancy
+              Škibola i Jakov Tomasić uz podršku Centra tehničke
               kulture Rijeka i Grada Rijeke.
             </p>
           </div>

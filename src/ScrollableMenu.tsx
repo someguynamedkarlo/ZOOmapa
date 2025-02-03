@@ -2,22 +2,15 @@ import { useRef, useState } from "react";
 import "./CSS/App.css";
 import "./CSS/menu.css";
 import "./CSS/gore.css";
+import { AllQuickFilterValues, QuickFilter, quickFilterToString } from "./Filter";
 
 interface ScrollableMenuProps {
-  onCategoryClick: (categoryLabel: string) => void;
+  onQuickFilterClick: (quickFilter: QuickFilter | null) => void;
 }
 
-function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
+function ScrollableMenu({ onQuickFilterClick }: ScrollableMenuProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [activeButton, setActiveButton] = useState<string | null>(null);
-
-  // Mapping button labels to actual category values
-  const categoryMappings: { [key: string]: string } = {
-    "Hitno!": "HITNA MEDICINSKA POMOĆ",
-    "Bolnice i ordinacije": "BOLNICE",
-    Ljekarne: "LJEKARNE BEZ DEŽURSTAVA",
-    Veterinari: "VETERINARI",
-  };
+  const [activeButton, setActiveButton] = useState<QuickFilter | null>(null);
 
   const scrollHorizontally = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
@@ -36,13 +29,13 @@ function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
     }
   };
 
-  const handleButtonClick = (item: string) => {
+  const handleButtonClick = (item: QuickFilter) => {
     if (activeButton === item) {
       // Deselect if clicked again
-      onCategoryClick(categoryMappings[item]);
+      onQuickFilterClick(null);
       setActiveButton(null);
     } else {
-      onCategoryClick(categoryMappings[item]);
+      onQuickFilterClick(item);
       setActiveButton(item);
     }
   };
@@ -57,13 +50,13 @@ function ScrollableMenu({ onCategoryClick }: ScrollableMenuProps) {
         &#8249;
       </button>
       <div className="scroll-container" ref={scrollContainerRef}>
-        {Object.keys(categoryMappings).map((item) => (
+        {AllQuickFilterValues.map((item) => (
           <button
             key={item}
             className={`scroll-item ${activeButton === item ? "active" : ""}`}
             onClick={() => handleButtonClick(item)}
           >
-            {item}
+            {quickFilterToString(item)}
           </button>
         ))}
       </div>

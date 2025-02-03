@@ -201,12 +201,19 @@ svg {
   padding: 20px;
   border-radius: 6px;
   z-index: 1000001;
+  width: 100%;
+  align-items: center;
+  align-content: center;
 }
 
 .popup-content {
   background-color: #181818;
   padding: 20px;
   border-radius: 6px;
+  width: 80%;
+  margin-left: 10%;
+  margin-right: 10%;
+  text-align: center;
 }
 
 .popup-content p {

@@ -1,87 +1,88 @@
 import { useState } from "react";
 import "./CSS/menu.css";
+import { Filter } from "./Filter";
+import { AllCategories, AllKategorijaKorisnika, AllTipVlasnikaUsluge, AllTrosak, kategorijaKorisnikaToString, kategorijaToString, tipVlasnikaToString, trosakKorisnikaToString } from "./Usluge";
 
 interface DropdownProps {
-  onFilterChange: (filters: { [key: string]: string[] }) => void;
+  onFilterChange: (newFilter: Filter) => void;
+  filters: Filter;
+  dropdownVisible: boolean,
+  toggleFilterDrowdown: () => void;
 }
 
-const filterData = [
-  {
-    category: "Lokacije",
-    options: [
-      "Zdravstveno osiguranje",
-      "Usluge (specifično) za mlade",
-      "Usluge (specifično) za djecu",
-      "Prevencija - promicanje zdravlja i suzbijanje bolesti",
-      "Zdravstveni odgoj i obrazovanje",
-      "Obiteljska medicina / opća praksa",
-      "Hitna medicinska pomoć",
-      "Bolnice",
-      "Psihijatrijsko liječenje",
-      "Psihološko savjetovanje/pomoć",
-      "Ostale specijalizirane usluge savjetovanja",
-      "Podrška ovisnicima",
-      "Zdravlje žena i reproduktivno zdravlje",
-      "Podrška oboljelima i rehabilitacija",
-      "Stomatolozi",
-      "Ljekarne s dežurstvima",
-      "Ljekarne bez dežurstava",
-      "Veterinari",
-      "Privatne bolnice i poliklinike",
-      "Ostale usluge - nekategorizirano",
-    ],
-  },
-  {
-    category: "Ustanova pružanja usluge",
-    options: ["Javna (državna) ustanova", "Privatna ustanova", "Udruga - NVO"],
-  },
-  {
-    category: "Vrsta korisnika",
-    options: [
-      "Sve dobne skupine",
-      "Mlade punoljetne osobe",
-      "Djeca (do 13 godina)",
-      "Osobe s invaliditetom",
-    ],
-  },
-  {
-    category: "Trošak za korisnike",
-    options: [
-      "Besplatno",
-      "Naplata sukladno cjeniku usluga",
-      "Pojedine usluge uz nadoplatu",
-    ],
-  },
-  {
-    category: "Radno vrijeme",
-    options: ["Ponedjeljak - Petak", "Subota", "Rad nedjeljom"],
-  },
-];
+type SingleFilterEntry = {
+  title: string,
+  options: string[],
+  onChange: (i: number, oldFilter: Filter) => Filter,
+  isSelected: (i: number, filter: Filter) => boolean,
+};
 
-function DropdownWithCheckboxes({ onFilterChange }: DropdownProps) {
-  const [selectedFilters, setSelectedFilters] = useState<{
-    [key: string]: string[];
-  }>({});
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+const filterData: SingleFilterEntry[] = [
+  {
+    title: "Vrsta usluge",
+    options: AllCategories.map(k => kategorijaToString(k)),
+    onChange(i, oldFilter) {
+      const change = AllCategories[i];
+      return {
+        ...oldFilter,
+        kategorije: oldFilter.kategorije.includes(change) ?
+          oldFilter.kategorije.filter(k => k !== change) : oldFilter.kategorije.concat(change)
+      }
+    },
+    isSelected(i, filter) {
+      return filter.kategorije.includes(AllCategories[i]);
+    },
+  },
+  {
+    title: "Vrsta ustanove",
+    options: AllTipVlasnikaUsluge.map(k => tipVlasnikaToString(k)),
+    onChange(i, oldFilter) {
+      const change = AllTipVlasnikaUsluge[i];
+      return {
+        ...oldFilter,
+        vrstaUstanove: oldFilter.vrstaUstanove.includes(change) ?
+          oldFilter.vrstaUstanove.filter(k => k !== change) : oldFilter.vrstaUstanove.concat(change)
+      }
+    },
+    isSelected(i, filter) {
+      return filter.vrstaUstanove.includes(AllTipVlasnikaUsluge[i]);
+    },
+  },
+  {
+    title: "Vrsta korisnika",
+    options: AllKategorijaKorisnika.map(k => kategorijaKorisnikaToString(k)),
+    onChange(i, oldFilter) {
+      const change = AllKategorijaKorisnika[i];
+      return {
+        ...oldFilter,
+        kategorijaKorisnika: oldFilter.kategorijaKorisnika.includes(change) ?
+          oldFilter.kategorijaKorisnika.filter(k => k !== change) : oldFilter.kategorijaKorisnika.concat(change)
+      }
+    },
+    isSelected(i, filter) {
+      return filter.kategorijaKorisnika.includes(AllKategorijaKorisnika[i]);
+    },
+  },
+  {
+    title: "Cijena",
+    options: AllTrosak.map(k => trosakKorisnikaToString(k)),
+    onChange(i, oldFilter) {
+      const change = AllTrosak[i];
+      return {
+        ...oldFilter,
+        trosakKorisnika: oldFilter.trosakKorisnika.includes(change) ?
+          oldFilter.trosakKorisnika.filter(k => k !== change) : oldFilter.trosakKorisnika.concat(change)
+      }
+    },
+    isSelected(i, filter) {
+      return filter.trosakKorisnika.includes(AllTrosak[i]);
+    },
+  },
+]
+
+function DropdownWithCheckboxes({ filters, onFilterChange, dropdownVisible, toggleFilterDrowdown }: DropdownProps) {
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
-  const handleCheckboxChange = (category: string, option: string) => {
-    const updatedCategory = selectedFilters[category]?.includes(option)
-      ? selectedFilters[category].filter((item) => item !== option)
-      : [...(selectedFilters[category] || []), option];
-
-    const updatedFilters = {
-      ...selectedFilters,
-      [category]: updatedCategory,
-    };
-
-    setSelectedFilters(updatedFilters);
-    onFilterChange(updatedFilters);
-  };
-
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
 
   const toggleCategory = (category: string) => {
     if (expandedCategories.includes(category)) {
@@ -95,46 +96,65 @@ function DropdownWithCheckboxes({ onFilterChange }: DropdownProps) {
 
   return (
     <div className="dropdown-container">
-      <button className="dropdown-button" onClick={toggleDropdown}>
+      <button className="dropdown-button" onClick={toggleFilterDrowdown}>
         <div style={{ marginRight: 10 }}>
           Filteri{" "}
         </div>
         <i className={`fa fa-chevron-down ${dropdownVisible ? "open" : ""}`} />
       </button>
       <div className={`dropdown-menu ${dropdownVisible ? "show" : ""}`}>
-        {filterData.map((filter) => (
-          <div key={filter.category} className="filter-section">
+        { filterData.map((filter) => (
+          <div key={filter.title} className="filter-section">
             <div
               className="category-header"
-              onClick={() => toggleCategory(filter.category)}
+              onClick={() => toggleCategory(filter.title)}
             >
-              <span>{filter.category}</span>
+              <span>{filter.title}</span>
               <i
                 className={`fa fa-chevron-${
-                  expandedCategories.includes(filter.category) ? "up" : "down"
+                  expandedCategories.includes(filter.title) ? "up" : "down"
                 } category-icon`}
               />
             </div>
-            {expandedCategories.includes(filter.category) && (
+            { expandedCategories.includes(filter.title) && (
               <div className="filter-options">
-                {filter.options.map((option) => (
-                  <div key={option} className="filter-option">
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      id={`${filter.category}-${option}`}
-                      checked={
-                        selectedFilters[filter.category]?.includes(option) ||
-                        false
-                      }
-                      onChange={() =>
-                        handleCheckboxChange(filter.category, option)
-                      }
-                      aria-labelledby={option}
-                    />
-                    <label htmlFor={`${filter.category}-${option}`}>
-                      {option}
-                    </label>
+                { ["SVE"].concat(filter.options).map((option, index) => (
+                  <div key={`${filter.title}-${option}`} className="filter-option">
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", paddingTop: 12, paddingBottom: 12 }}>
+                      <input
+                        type="checkbox"
+                        className="checkbox"
+                        id={`${filter.title}-${option}`}
+                        checked={
+                          index === 0 ?
+                          filter.options.find((_, i) => !filter.isSelected(i, filters)) === undefined
+                          :
+                          filter.isSelected(index-1, filters)
+                        }
+                        onChange={() => {
+                          if (index === 0) {
+                            const isSelected = filter.options.find((_, i) => !filter.isSelected(i, filters)) === undefined;
+                            let newFilters = filters;
+                            filter.options.forEach((_, i) => {
+                              if (filter.isSelected(i, newFilters) === isSelected) {
+                                newFilters = filter.onChange(i, newFilters);
+                              }
+                            });
+                            onFilterChange(newFilters)
+                          }
+                          else onFilterChange(filter.onChange(index-1, filters))
+                        }}
+                        aria-labelledby={option}
+                      />
+                      <label htmlFor={`${filter.title}-${option}`} style={
+                        index === 0 ? { fontWeight: "bold", width: "100%" } : { width: "100%" }
+                      }>
+                        {option}
+                      </label>
+                    </div>
+                    { index === 0 &&
+                      <div style={{ backgroundColor: "darkgray", width: "100%", height: 0.5 }}></div>
+                    }
                   </div>
                 ))}
               </div>

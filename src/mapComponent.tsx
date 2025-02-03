@@ -1,77 +1,71 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from "react-leaflet";
 import L from "leaflet";
 
-import psihoslik from "./icons/psiho.webp";
-import prevencijaslik from "./icons/prevencija2.webp";
-import domslik from "./icons/dom3.webp";
-import bolnicaslik from "./icons/bolnica.webp";
-import ljekarnaslik from "./icons/ljekarna.webp";
-import polislik from "./icons/poli.webp";
-import orto from "./icons/ortodont.webp";
-import obslik from "./icons/ob.webp";
+import ostaleusluge from "./icons/ostaleusluge.webp";
+import podrskamladi from "./icons/podrskamladi.webp";
+import podrskadjeca from "./icons/podrskadjeca.webp";
+import prevencija2 from "./icons/prevencija2.webp";
+import oboljeli from "./icons/oboljeli.webp";
 import hitno from "./icons/hitno.webp";
-import vet from "./icons/veterinari.webp";
-import podrška from "./icons/podrška.webp"
-import zene from "./icons/zene.webp"
-import psihpomoc from "./icons/psihpomoc.webp"
-import usmladi from "./icons/podrskamladi.webp"
-import usdjeca from "./icons/podrskadjeca.webp"
-import ostalo from "./icons/ostaleusluge.webp"
-import nekategorizirano from "./icons/nekategorizirano.webp"
-import oboljeli from "./icons/oboljeli.webp"
-import ostaleusluge from "./icons/ostaleusluge.webp"
+import psihpomoc from "./icons/psihpomoc.webp";
+import zene from "./icons/zene.webp";
+import bolnica from "./icons/bolnica.webp";
+import ortodont from "./icons/ortodont.webp";
+import ljekarna from "./icons/ljekarna.webp";
+import veterinari from "./icons/veterinari.webp";
+import poli from "./icons/poli.webp";
+import krv from "./icons/krv.webp";
+
+
 
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
 import "./CSS/gore.css";
 import ButonC from "./butonC";
-import { Usluga } from "./Usluge";
+import { Kategorija, Usluga } from "./Usluge";
 import MarkerPopupOrList from "./MarkerPopupOrList";
 
 const DEFAULT_ZOOM = 14;
 const MIN_ZOOM = 11;
-const MAX_ZOOM = 18;
+export const MAX_ZOOM = 18;
 const MAX_TILE_ZOOM = 16; // Max zoom for requesting new tiles. All zooms greater that this will look more and more blurry
 
-// This should be here for safety reasons, but this is only a testing temporary key so I'll allow it
+// TODO: This shouldn't be here for safety reasons, but this is only a testing temporary key so I'll allow it
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 
-const MapComponent = ({
-  mapCenter,
-  data,
-  mapRef,
-  idToOpenPopup,
-}: {
+// TODO: log when error
+function getIconUrl(u: Usluga): string {
+  switch (u.kategorija) {
+    case Kategorija.ZDRAVSTVENO_OSIGURANJE: return ostaleusluge;
+    case Kategorija.ZA_MLADE: return podrskamladi;
+    case Kategorija.ZA_DJECU: return podrskadjeca;
+    case Kategorija.PREVENCIJA: return prevencija2;
+    case Kategorija.OBITELJSKA_MEDICINA: return oboljeli;
+    case Kategorija.HITNA_POMOC: return hitno;
+    case Kategorija.BOLNICE: return bolnica;
+    case Kategorija.MENTALNO_ZDRAVLJE: return psihpomoc;
+    case Kategorija.ZDRAVLJE_ZENA: return zene;
+    case Kategorija.REHABILITACIJA: return bolnica;
+    case Kategorija.STOMATOLOZI: return ortodont;
+    case Kategorija.LJEKARNE_S_DEZURSTVIMA: return ljekarna;
+    case Kategorija.LJEKARNE_BEZ_DEZURSTVA: return ljekarna;
+    case Kategorija.VETERINARI: return veterinari;
+    case Kategorija.PRIVATNICI: return poli;
+    case Kategorija.DARIVANJE_KRVI: return krv;
+  }
+}
+
+type Props = {
   mapCenter: [number, number];
   data: Usluga[]; // Consider typing this as Usluga[] if possible
   mapRef: React.RefObject<L.Map>; // Ref type without null
   children?: ReactNode;
-  idToOpenPopup: number | null,
-}) => {
-  const iconMapping: { [key: number]: string } = {
-    0: ostaleusluge,
+  idToOpenPopup: number | null, 
+  onMapClick: () => void;
+}
 
-    13: oboljeli,
-    19: nekategorizirano,
-    10: ostalo,
-    1: usmladi,
-    2: usdjeca,
-    9: psihpomoc,
-    12: zene,
-    11: podrška,
-    17: vet,
-    7: bolnicaslik,
-    5: domslik,
-    6: hitno,
-    15: ljekarnaslik,
-    16: ljekarnaslik,
-    18: polislik,
-    14: orto,
-    3: prevencijaslik,
-    8: psihoslik,
-    4: obslik,
-  };
+const MapComponent = ({ mapCenter, data, mapRef, idToOpenPopup, onMapClick, children }: Props) => {
   const [filteredData, setFilteredData] = useState<Usluga[]>(data);
   const markersRef = useRef<any[]>([]);
   // Overwrite popup id when user clicks something else
@@ -109,6 +103,12 @@ const MapComponent = ({
       openPopup(idToOpenPopup)
     }
   }, [idToOpenPopup])
+  
+  // Custom hook to handle map clicks
+  const MapClickHandler = () => {
+    useMapEvent("click", onMapClick);
+    return null;
+  };
 
   return (
     <MapContainer
@@ -121,8 +121,11 @@ const MapComponent = ({
       ref={mapRef} // Corrected ref type
       zoomControl={false}
     >
+      <MapClickHandler />
       <TileLayer
+        // TODO: use local tiles intead of stadiamaps
         url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
+        // url={`/tiles/{z}/{x}/tile_{z}_{x}_{y}.png`}
         attribution="&copy; OpenStreetMap contributors"
         maxNativeZoom={MAX_TILE_ZOOM} // Load tiles only up to this zoom level
         maxZoom={MAX_ZOOM}       // Allow users to zoom further
@@ -137,9 +140,7 @@ const MapComponent = ({
             key={location.id}
             position={[location.lat, location.lng]}
             icon={L.icon({
-              iconUrl:
-                iconMapping[location.kategorija[0]] ||
-                "default_icon.png",
+              iconUrl: getIconUrl(location),
               iconSize: [40, 40],
             })}
             eventHandlers={{
@@ -161,7 +162,7 @@ const MapComponent = ({
           </Marker>
         ))}
       </MarkerClusterGroup>
-      <ButonC />
+      {children}
     </MapContainer>
   );
 };

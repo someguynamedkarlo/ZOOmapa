@@ -43,7 +43,7 @@ const MarkerPopupOrList = ({usluga, vidljiveUsluge}: Props) => {
     
     return (
     <div className="flex-column">
-    {prikaziOveUsluge.map(u => (
+    {prikaziOveUsluge.map((u, i) => (
       <div key={u.id} className="popup-list-section">
         <div
           className="popup-usluga-header"
@@ -54,7 +54,12 @@ const MarkerPopupOrList = ({usluga, vidljiveUsluge}: Props) => {
             className={`fa fa-chevron-${isExpanded[u.id] ? "up" : "down"} category-icon`}
           />
         </div>
-        { isExpanded[u.id] && <MarkerPopupContent usluga={u} /> }
+        { isExpanded[u.id] && 
+          <>
+            <div style={{ marginTop: 16 }}></div>
+            <MarkerPopupContent usluga={u} />
+            <div style={ i === prikaziOveUsluge.length - 1 ? {} : { marginBottom: 24 } }></div>
+          </> }
       </div>
     ))}
     </div>);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
-import MapComponent from "./mapComponent";
+import MapComponent, { MAX_ZOOM } from "./mapComponent";
 
 import "./CSS/App.css";
 import "./CSS/gore.css";
@@ -10,39 +10,7 @@ import L from "leaflet";
 import ButonC from "./butonC";
 import { Usluga } from "./Usluge";
 import fetchData from "./supabase";
-const filterMappingCost = {
-  Besplatno: 0,
-  "Naplata sukladno cjeniku usluga": 1,
-  "Pojedine usluge uz nadoplatu": 2,
-};
-
-const filterMappingTime = {
-  "Ponedjeljak - Petak": 0,
-  Subota: 1,
-  "Rad nedjeljom": 2,
-};
-const lokacijeMapping = {
-  "zdravstveno osiguranje": 0,
-  "USLUGE (SPECIFIČNO) ZA MLADE": 1,
-  "USLUGE (SPECIFIČNO) ZA DJECU": 2,
-  "PREVENCIJA - PROMICANJE ZDRAVLJA I SUZBIJANJE BOLESTI": 3,
-  "ZDRAVSTVENI ODGOJ I OBRAZOVANJE": 4,
-  "OBITELJSKA MEDICINA / OPĆA PRAKSA": 5,
-  "HITNA MEDICINSKA POMOĆ": 6,
-  BOLNICE: 7,
-  "PSIHIJATRIJSKO LIJEČENJE": 8,
-  "PSIHOLOŠKO SAVJETOVANJE/POMOĆ": 9,
-  "OSTALE SPECIJALIZIRANE USLUGE SAVJETOVANJA": 10,
-  "PODRŠKA OVISNICIMA": 11,
-  "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": 12,
-  "PODRŠKA OBOLJELIMA I REHABILITACIJA": 13,
-  STOMATOLOZI: 14,
-  "LJEKARNE S DEŽURSTVIMA": 15,
-  "LJEKARNE BEZ DEŽURSTAVA": 16,
-  VETERINARI: 17,
-  "PRIVATNE BOLNICE I POLIKLINIKE": 18,
-  "OSTALE USLUGE - NEKATEGORIZIRANO": 19,
-};
+import { Filter, makeBolniceIOrdinacijeFilter, makeDefaultFilter, makeHitnoFilter, makeLjekarneFilter, makeVeterinariFilter, QuickFilter, spadaLiUFilter } from "./Filter";
 
 // Return lower number to appear before in the search result
 // Return null if the search is no match
@@ -50,209 +18,80 @@ function searchResultSortNumber(usluga: Usluga, searchText: string): number | nu
   const search = searchText.trim().toLocaleLowerCase();
   if (search.length < 2) return null;
   else if (usluga.imeUstanove.trim().toLocaleLowerCase().includes(search)) return 1;
-  else if (usluga.pruzatelj.trim().toLocaleLowerCase().includes(search)) return 2;
-  else if (usluga.opis.trim().toLocaleLowerCase().includes(search)) return 3;
-  else if (usluga.specUsluga.trim().toLocaleLowerCase().includes(search)) return 4;
-  else if (usluga.adresa.trim().toLocaleLowerCase().includes(search)) return 5;
-  else if (usluga.telefon.trim().toLocaleLowerCase().includes(search)) return 6;
-  else if (usluga.email.trim().toLocaleLowerCase().includes(search)) return 7;
-  else if (usluga.web.trim().toLocaleLowerCase().includes(search)) return 8;
-  else if (usluga.radnoVrijeme.trim().toLocaleLowerCase().includes(search)) return 9;
-  else if (usluga.preduvjeti.trim().toLocaleLowerCase().includes(search)) return 10;
-  else if (usluga.namjenjeno.trim().toLocaleLowerCase().includes(search)) return 11;
+  else if (usluga.nazivUsluge.trim().toLocaleLowerCase().includes(search)) return 2;
+  else if (usluga.opisUsluge.trim().toLocaleLowerCase().includes(search)) return 3;
   else return null
 }
 
 function App() {
   const [popisUsluga, setPopisUsluga] = useState<Usluga[]>([]);
-  const [selectedFilters, setSelectedFilters] = useState<{
-    [key: string]: string[];
-  }>({});
+  const [selectedFilters, setSelectedFilters] = useState<Filter>(makeDefaultFilter());
   const [searchTerm, setSearchTerm] = useState("");
   const [mapCenter] = useState<[number, number]>([
     45.32560918851513, 14.44176433327116,
   ]);
   const [filteredMatches, setFilteredMatches] = useState<Usluga[]>([]);
 
-  const [topResults, setTopResults] = useState<Usluga[]>([]);
   const [idToOpenPopup, setIdToOpenPopup] = useState<number | null>(null);
+
+  const [oKartiPopupVisible, setOKartiPopupVisible] = useState(false);
+
+  const [filterDropdownVisible, setFilterDropdownVisible] = useState(false);
+  const toggleFilterDropdown = () => {
+    setFilterDropdownVisible(!filterDropdownVisible);
+  };
 
   const isSearchingText = searchTerm.length > 2;
   
-  const handleQuickFilterButtonClick = (categoryLabel: string) => {
-    const mappedCategory = Object.entries(lokacijeMapping).find(
-      ([key]) => key.trim().toLowerCase() === categoryLabel.trim().toLowerCase()
-    )?.[1];
-
-    if (mappedCategory !== undefined) {
-      setSelectedFilters((prevFilters) => {
-        const currentLocations = prevFilters.Lokacije || [];
-
-        // Check if the clicked category is already in the filter
-        if (currentLocations.includes(categoryLabel)) {
-          // Remove the category if it's already selected
-          return { Lokacije: [] };
-          // return {
-          //   ...prevFilters,
-          //   Lokacije: currentLocations.filter((loc) => loc !== categoryLabel),
-          // };
-        } else {
-          // Add the category to the selected filters
-          return { Lokacije: [categoryLabel] };
-          // return {
-          //   ...prevFilters,
-          //   Lokacije: [...currentLocations, categoryLabel],
-          // };
-        }
-      });
-    } else {
-      console.error(`Category "${categoryLabel}" not found in mapping.`);
+  const handleQuickFilterButtonClick = (quickFilter: QuickFilter | null) => {
+    switch(quickFilter) {
+      case QuickFilter.HITNO: {
+        setSelectedFilters(makeHitnoFilter());
+        break;
+      }
+      case QuickFilter.BOLNICE_I_ORDINACIJE: {
+        setSelectedFilters(makeBolniceIOrdinacijeFilter());
+        break;
+      }
+      case QuickFilter.LJEKARNE: {
+        setSelectedFilters(makeLjekarneFilter());
+        break;
+      }
+      case QuickFilter.VETERINARI: {
+        setSelectedFilters(makeVeterinariFilter());
+        break;
+      }
+      case null: {
+        setSelectedFilters(makeDefaultFilter());
+        break;
+      }
     }
   };
 
   const mapRef = useRef<L.Map | null>(null);
 
-  // Function to check if the service matches the selected filters
-  const spadaLiUFilter = (
-    usluga: Usluga,
-    filters: { [key: string]: string[] }
-  ) => {
-    const matchesSearch = searchTerm
-      ? usluga.imeUstanove.toLowerCase().includes(searchTerm.toLowerCase())
-      : true;
-
-    const matchesFilters = Object.entries(filters).every(
-      ([category, options]) => {
-        if (options.length === 0) return true; // No filter selected for this category, allow all items
-
-        const categoryValue = usluga[category as keyof Usluga];
-
-        // Handle filtering for "Vrste korisnika" filter
-        if (category === "Trošak za korisnike") {
-          const mappedTrosak: number[] = options
-            .map(
-              (option) =>
-                filterMappingCost[option as keyof typeof filterMappingCost]
-            )
-            .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
-
-          // Log the selected options and mapped values
-          // console.log("Selected Trošak options:", options);
-          // console.log("Mapped Trošak values:", mappedTrosak);
-          // console.log("Service 'trosak' value:", usluga.trosak);
-
-          // Check if the mapped options intersect with the "trosak" value of the location
-          return (
-            mappedTrosak.length === 0 || mappedTrosak.includes(usluga.trosak)
-          );
-        }
-        if (category === "Vrsta korisnika") {
-          // console.log("Checking Vrste korisnika filter options:", options);
-          // console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
-
-          // Check if any of the selected options match the 'namjenjeno' field of the service
-          return options.some((option) =>
-            usluga.namjenjeno.toLowerCase().includes(option.toLowerCase())
-          );
-        }
-
-        if (category === "Ustanova pružanja usluge") {
-          // console.log("Checking Vrste korisnika filter options:", options);
-          // console.log("Service 'namjenjeno' value:", usluga.namjenjeno);
-
-          // Check if any of the selected options match the 'namjenjeno' field of the service
-          return options.some((option) =>
-            usluga.pruzatelj.toLowerCase().includes(option.toLowerCase())
-          );
-        }
-        if (category === "Radno vrijeme") {
-          const mappedTime: number[] = options
-            .map(
-              (option) =>
-                filterMappingTime[option as keyof typeof filterMappingTime]
-            )
-            .filter((value) => typeof value === "number"); // Ensure only valid numbers are mapped
-
-          // Log the selected options and mapped values
-          // console.log("Selected Trošak options:", options);
-          // console.log("Mapped Trošak values:", mappedTime);
-          // console.log("Service 'trosak' value:", usluga.radVrijeme2.toString());
-          if (usluga.radVrijeme2) return true;
-          // Check if the mapped options intersect with the "trosak" value of the location
-          return (
-            mappedTime.length === 0 || mappedTime.includes(usluga.radVrijeme2)
-          );
-        }
-        // Handle filtering for "Lokacije" filter (kategorija array)
-        // Handle filtering for "Lokacije" filter (kategorija array)
-        if (category === "Lokacije") {
-          const locationValues = options
-            .map((option) => {
-              // Normalize the key (trimmed and lowercase) for mapping
-              const normalizedOption = option.trim().toLowerCase();
-
-              // Find the corresponding key in lokacijeMapping by normalizing it
-              const mappedValue = Object.entries(lokacijeMapping).find(
-                ([key]) => key.trim().toLowerCase() === normalizedOption
-              )?.[1];
-
-              // console.log(`Mapping option "${option}" to "${mappedValue}"`);
-              return mappedValue ?? -1; // Fallback for unmapped
-            })
-            .filter((value) => value !== -1); // Remove invalid mappings
-
-          // console.log("Mapped location values (normalized):", locationValues);
-
-          const matchesLocation = locationValues.some((locValue) =>
-            usluga.kategorija.includes(locValue)
-          );
-
-          // console.log("Service's kategorija:", usluga.kategorija);
-          // console.log("Matches location filter:", matchesLocation);
-
-          return locationValues.length === 0 || matchesLocation;
-        }
-
-        // Handle filtering based on arrays like "kategorija"
-        if (Array.isArray(categoryValue)) {
-          return options.some((option) =>
-            categoryValue.includes(Number(option))
-          );
-        }
-
-        if (typeof categoryValue === "string") {
-          return options.some((option) =>
-            categoryValue.toLowerCase().includes(option.toLowerCase())
-          );
-        }
-
-        return false; // If no valid category matches, return false
-      }
-    );
-
-    return matchesSearch && matchesFilters; // Return true if both search and filters match
-  };
-
   const updateFilteredMatches = () => {
     
     type sortAndUsluga = { sort: number, u: Usluga };
+
+    const filteredData: Usluga[] = popisUsluga.filter((usluga: Usluga) =>
+      spadaLiUFilter(usluga, selectedFilters)
+    );
+    let finalFilteredData: Usluga[]
+
     if (isSearchingText) {
-      const filteredData: sortAndUsluga[] = popisUsluga
+      const sortedFiltered = filteredData
         .map((u) => ({ sort: searchResultSortNumber(u, searchTerm), u: u }))
         .filter(u => u.sort !== null)
         .map(u => u as sortAndUsluga);
 
-      setFilteredMatches(filteredData.map(element => element.u));
-
-      const sortedData = filteredData.sort((a, b) => a.sort - b.sort);
-      setTopResults(sortedData.map(element => element.u));
+      const sortedData = sortedFiltered.sort((a, b) => a.sort - b.sort);
+      finalFilteredData = sortedData.map(element => element.u);
     } else {
-      const filteredData = popisUsluga.filter((usluga: Usluga) =>
-        spadaLiUFilter(usluga, selectedFilters)
-      );
-      setFilteredMatches(filteredData);
-      setTopResults([]);
+      finalFilteredData = filteredData;
     }
+
+    setFilteredMatches(finalFilteredData);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,15 +102,18 @@ function App() {
   };
   const handleSearchResultClick = (lat: number, lng: number, id: number) => {
     if (mapRef.current) {
-      mapRef.current.setView(new L.LatLng(lat, lng), 18); // Zoom to the clicked location
+      mapRef.current.setView(new L.LatLng(lat, lng), MAX_ZOOM); // Zoom to the clicked location
     }
     setIdToOpenPopup(id)
     setSearchTerm("");
   };
-
-  const handleFilterChange = (filters: { [key: string]: string[] }) => {
-    setSelectedFilters(filters);
+  
+  const onEmptyMapClick = () => {
+    if (searchTerm !== "") setSearchTerm("");
+    if (filterDropdownVisible) setFilterDropdownVisible(false);
+    if (oKartiPopupVisible) setOKartiPopupVisible(false);
   };
+
   useEffect(() => {
     // Call the function when filters, search term change or when data loads
     updateFilteredMatches();
@@ -310,14 +152,36 @@ function App() {
               placeholder="Search..."
             />
           </div>
-          <DropdownWithCheckboxes onFilterChange={handleFilterChange} />
+          <DropdownWithCheckboxes
+            filters={selectedFilters} onFilterChange={setSelectedFilters}
+            dropdownVisible={filterDropdownVisible} toggleFilterDrowdown={toggleFilterDropdown}
+          />
         </div>
-        <ScrollableMenu onCategoryClick={handleQuickFilterButtonClick} />
+        <ScrollableMenu onQuickFilterClick={handleQuickFilterButtonClick} />
       </div>
+      { filteredMatches.length === 0 &&
+        <div style={{ position: "absolute", width: "100%", height: "100%", zIndex: 999, alignContent: "center", alignItems: "center", textAlign: "center" }}>
+          <div style={{ marginTop: 64, color: "gray", fontWeight: "bolder", fontSize: 32, width: "100%", textAlign: "center" }}>
+            Nema rezultata!
+          </div>
+          <div style={{ marginTop: 16, color: "gray", fontWeight: "bolder", fontSize: 20, width: "100%", textAlign: "center" }}>
+            Promijenite filter
+          </div>
+          <div style={{
+            display: "inline-block", paddingTop: 10, paddingBottom: 10, paddingLeft: 20, paddingRight: 20, 
+            backgroundColor: "#383838", color: "white", borderRadius: 20, textAlign: "center", cursor: "pointer", border: "none",
+            marginTop: 24, fontSize: 18, fontWeight: "bold"
+          }}
+            onClick={() => setSelectedFilters(makeDefaultFilter())}
+          >
+            Restiraj filter
+          </div>
+        </div>
+      }
 
       { isSearchingText && (
         <ul className="search-results">
-          { topResults.map(result => (
+          { filteredMatches.map(result => (
             <li
               key={result.id}
               className="search-result"
@@ -328,7 +192,7 @@ function App() {
               {result.imeUstanove} ({result.adresa})
             </li>
           ))}
-          { topResults.length === 0 && isSearchingText &&
+          { filteredMatches.length === 0 && isSearchingText &&
             <li
               key={"no-results"}
               className="search-result"
@@ -344,8 +208,9 @@ function App() {
         data={filteredMatches}
         mapRef={mapRef}
         idToOpenPopup={idToOpenPopup}
+        onMapClick={onEmptyMapClick}
       >
-        <ButonC></ButonC>
+        <ButonC oKartiPopupVisible={oKartiPopupVisible} setOKartiPopupVisible={setOKartiPopupVisible}/>
       </MapComponent>
     </div>
   );
