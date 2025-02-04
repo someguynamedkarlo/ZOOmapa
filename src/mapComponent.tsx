@@ -24,12 +24,11 @@ import "./CSS/App.css";
 import "./CSS/gore.css";
 import { Kategorija, Usluga } from "./Usluge";
 import MarkerPopupOrList from "./MarkerPopupOrList";
-import { DEFAULT_ZOOM, MAX_TILE_ZOOM, MAX_ZOOM, MIN_ZOOM } from "./constants";
+import { debugConsoleLogStringify, DEFAULT_ZOOM, MAX_TILE_ZOOM, MAX_ZOOM, MIN_ZOOM } from "./constants";
 
 // TODO: This shouldn't be here for safety reasons, but this is only a testing temporary key so I'll allow it
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
 
-// TODO: log when error
 function getIconUrl(u: Usluga): string {
   switch (u.kategorija) {
     case Kategorija.ZDRAVSTVENO_OSIGURANJE: return ostaleusluge;
@@ -49,6 +48,7 @@ function getIconUrl(u: Usluga): string {
     case Kategorija.PRIVATNICI: return poli;
     case Kategorija.DARIVANJE_KRVI: return krv;
   }
+  debugConsoleLogStringify("getIconUrl error: ", u);
 }
 
 type Props = {

@@ -1,4 +1,4 @@
-import { debugConsoleLogStringify } from "./constants";
+import { debugConsoleLog, debugConsoleLogStringify } from "./constants";
 import { Kategorija, KategorijaKorisnika, TipVlasnikaUsluge, Trosak, Usluga } from "./Usluge";
 
 function conform(s: any): string {
@@ -10,7 +10,6 @@ function conform(s: any): string {
   return s;
 }
 
-// TODO: log ako se vrati null (i ako je ukljucen log)
 function createCategory(kategorija: string, podkategorija: string): Kategorija | null {
   switch (kategorija) {
     case "ZDRAVSTVENO OSIGURANJE": return Kategorija.ZDRAVSTVENO_OSIGURANJE;
@@ -28,26 +27,26 @@ function createCategory(kategorija: string, podkategorija: string): Kategorija |
       switch (podkategorija) {
         case "S DEŽURSTVIMA": return Kategorija.LJEKARNE_S_DEZURSTVIMA;
         case "BEZ DEŽURSTAVA": return Kategorija.LJEKARNE_BEZ_DEZURSTVA;
-        default: return null;
       }
+      break;
     }
     case "VETERINARI": return Kategorija.VETERINARI;
     case "PRIVATNE BOLNICE I POLIKLINIKE": return Kategorija.PRIVATNICI;
     case "OSTALE USLUGE - NEKATEGORIZIRANO (darivanje krvi)": return Kategorija.DARIVANJE_KRVI;
-    default: return null;
-  }  
+  }
+  debugConsoleLog("createCategory error " + kategorija + ", " + podkategorija);
+  return null;
 }
 
-// TODO: log ako se vrati null (i ako je ukljucen log)
 function createTipVlasnikaUsluge(s: string): TipVlasnikaUsluge | null {
   switch (conform(s)) {
     case "Javna (državna) ustanova": return TipVlasnikaUsluge.DRZAVA;
     case "Privatna ustanova": return TipVlasnikaUsluge.PRIVATNO;
-    default: return null;
   }
+  debugConsoleLog("createTipVlasnikaUsluge error " + s);
+  return null;
 }
 
-// TODO: log ako se vrati null (i ako je ukljucen log)
 function createKategorijaKorisnika(k: string): KategorijaKorisnika | null {
   switch (conform(k)) {
     case "Sve dobne skupine": return KategorijaKorisnika.SVI;
@@ -60,12 +59,12 @@ function createKategorijaKorisnika(k: string): KategorijaKorisnika | null {
     case "Žene": return KategorijaKorisnika.ZENE;
     case "Učenici osnovnih i srednjih škola": return KategorijaKorisnika.UCENICI_OS_SS;
     case "Mlade punoljetne osobe i odrasli": return KategorijaKorisnika.MLADI_PUNOLJETNI_I_ODRASLI;
-    case "Životinje / kućni ljubimci ": return KategorijaKorisnika.ZIVOTINJE;
-    default: return null;
+    case "Životinje / kućni ljubimci": return KategorijaKorisnika.ZIVOTINJE;
   }
+  debugConsoleLog("createKategorijaKorisnika error " + k);
+  return null;
 }
 
-// TODO: log ako se vrati null (i ako je ukljucen log)
 function createTrosakKorisnika(t: string): Trosak | null {
   switch (conform(t)) {
     case "Besplatno za (osiguranog) korisnika": return Trosak.BESPLATNO;
@@ -73,11 +72,11 @@ function createTrosakKorisnika(t: string): Trosak | null {
     case "Uglavnom besplatno za korisnika - pojedine usluge se ostvaruju uz nadoplatu": return Trosak.UGLAVNOM_BESPLATNO;
     case "Ovisno o vrsti usluge": return Trosak.OVISI_O_USLUZI;
     case "Ovisno o vrsti lijeka": return Trosak.OVISI_O_LIJEKU;
-    default: return null;
   }
+  debugConsoleLog("createTrosakKorisnika error " + t);
+  return null;
 }
 
-// TODO: print tj. test ove podatke
 const fetchData = async (): Promise<Usluga[]> => {
   try {
     const response = await fetch("/BAZA4.json");
@@ -129,8 +128,6 @@ const fetchData = async (): Promise<Usluga[]> => {
         }
       }
       
-      // TODO: log ako je null za debug
-      // console.log("heheheheh ", JSON.stringify(converted));
       if (converted === null || converted === undefined) {
         debugConsoleLogStringify("Data ommited: ", u);
       }
