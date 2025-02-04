@@ -8,19 +8,32 @@ import "./CSS/gore.css";
 import ScrollableMenu from "./ScrollableMenu";
 import L from "leaflet";
 import ButonC from "./butonC";
-import { Usluga } from "./Usluge";
+import { kategorijaKorisnikaToString, kategorijaToString, tipVlasnikaToString, trosakKorisnikaToString, Usluga } from "./Usluge";
 import fetchData from "./supabase";
 import { Filter, makeBolniceIOrdinacijeFilter, makeDefaultFilter, makeHitnoFilter, makeLjekarneFilter, makeVeterinariFilter, QuickFilter, spadaLiUFilter } from "./Filter";
 import { MAX_ZOOM } from "./constants";
+import { croatiaStringIncludes } from "./Utils";
 
 // Return lower number to appear before in the search result
 // Return null if the search is no match
 function searchResultSortNumber(usluga: Usluga, searchText: string): number | null {
   const search = searchText.trim().toLocaleLowerCase();
   if (search.length < 2) return null;
-  else if (usluga.imeUstanove.trim().toLocaleLowerCase().includes(search)) return 1;
-  else if (usluga.nazivUsluge.trim().toLocaleLowerCase().includes(search)) return 2;
-  else if (usluga.opisUsluge.trim().toLocaleLowerCase().includes(search)) return 3;
+  else if (croatiaStringIncludes(usluga.imeUstanove, search)) return 1;
+  else if (croatiaStringIncludes(usluga.nazivUsluge, search)) return 2;
+  else if (croatiaStringIncludes(usluga.opisUsluge, search)) return 3;
+  else if (croatiaStringIncludes(kategorijaToString(usluga.kategorija), search)) return 4;
+  else if (croatiaStringIncludes(usluga.adresa, search)) return 5;
+  else if (croatiaStringIncludes(usluga.web, search)) return 6;
+  else if (croatiaStringIncludes(usluga.dodatneInfo, search)) return 7;
+  else if (croatiaStringIncludes(usluga.telefon, search)) return 8;
+  else if (croatiaStringIncludes(usluga.email, search)) return 9;
+  else if (usluga.javnoIliPrivatno !== null && 
+    croatiaStringIncludes(tipVlasnikaToString(usluga.javnoIliPrivatno), search)) return 10;
+  else if (usluga.kategorijaKorisnika !== null && 
+    croatiaStringIncludes(kategorijaKorisnikaToString(usluga.kategorijaKorisnika), search)) return 11;
+  else if (usluga.trosakKorisnika !== null && 
+    croatiaStringIncludes(trosakKorisnikaToString(usluga.trosakKorisnika), search)) return 12;
   else return null
 }
 
@@ -191,7 +204,7 @@ function App() {
                 handleSearchResultClick(result.lat, result.lng, result.id)
               }
             >
-              {result.imeUstanove} ({result.adresa})
+              {result.imeUstanove} - {result.nazivUsluge} ({result.adresa})
             </li>
           ))}
           { filteredMatches.length === 0 && isSearchingText &&
