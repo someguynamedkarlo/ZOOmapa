@@ -1,3 +1,4 @@
+import { debugConsoleLogStringify } from "./constants";
 import { Kategorija, KategorijaKorisnika, TipVlasnikaUsluge, Trosak, Usluga } from "./Usluge";
 
 function conform(s: any): string {
@@ -84,8 +85,10 @@ const fetchData = async (): Promise<Usluga[]> => {
     
     let previousKategorija: string = "";
     let previousPodkategorija: string = "";
+    
+    const result: Usluga[] = [];
 
-    const result: Usluga[] = data.map((u: any, index) => {
+    data.forEach((u: any, index) => {
       const lat = parseFloat(u.LATITUDE);
       const lng = parseFloat(u.LONGITUDE);
 
@@ -128,13 +131,23 @@ const fetchData = async (): Promise<Usluga[]> => {
       
       // TODO: log ako je null za debug
       // console.log("heheheheh ", JSON.stringify(converted));
+      if (converted === null || converted === undefined) {
+        debugConsoleLogStringify("Data ommited: ", u);
+      }
       
       previousKategorija = kategorija;
       previousPodkategorija = podkategorija;
-
-      return converted;
+      
+      const duplikati = result.filter(u2 => {
+        u2.imeUstanove === u.imeUstanove && u2.nazivUsluge === u.nazivUsluge
+      });
+      
+      if (duplikati.length > 0) {
+        debugConsoleLogStringify("Duplikat! ", u);
+      } else if (converted !== null) {
+        result.push(converted)
+      }
     })
-    .filter(u => u !== null);
     
     return result;
   } catch (err) {

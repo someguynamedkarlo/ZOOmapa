@@ -22,14 +22,9 @@ import krv from "./icons/krv.webp";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import "./CSS/App.css";
 import "./CSS/gore.css";
-import ButonC from "./butonC";
 import { Kategorija, Usluga } from "./Usluge";
 import MarkerPopupOrList from "./MarkerPopupOrList";
-
-const DEFAULT_ZOOM = 14;
-const MIN_ZOOM = 11;
-export const MAX_ZOOM = 18;
-const MAX_TILE_ZOOM = 16; // Max zoom for requesting new tiles. All zooms greater that this will look more and more blurry
+import { DEFAULT_ZOOM, MAX_TILE_ZOOM, MAX_ZOOM, MIN_ZOOM } from "./constants";
 
 // TODO: This shouldn't be here for safety reasons, but this is only a testing temporary key so I'll allow it
 const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";

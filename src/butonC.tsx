@@ -1,5 +1,6 @@
 import "./CSS/App.css";
 import "./CSS/gore.css";
+import infoIcon from "./icons/info.webp"
 
 type Props = {
   oKartiPopupVisible: boolean;
@@ -19,7 +20,7 @@ const ButonC = ({oKartiPopupVisible, setOKartiPopupVisible}: Props) => {
   return (
     <>
       <button className="bbb" onClick={handleButtonClick}>
-        O karti
+        <img src={infoIcon} style={{ width: "100%", height: "100%" }} />
       </button>
 
       {/* Conditionally render popup */}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import MarkerPopupContent from "./MarkerPopupContent";
 import { Usluga } from "./Usluge";
 import "./CSS/marker_popup.css"
+import { LAT_CLICK_GROUP_THRESHOLD, LONG_CLICK_GROUP_THRESHOLD } from "./constants";
 
 type Props = {
     usluga: Usluga,
@@ -11,10 +12,8 @@ type Props = {
 type isExpandedMap = {[key: number]: boolean};
 
 function uslugeSuBlizu(a: Usluga, b: Usluga): boolean {
-    const LAT_THRESHOLD = 0.0001;
-    const LONG_THRESHOLD = 0.0001;
-    return Math.abs(a.lat - b.lat) < LAT_THRESHOLD &&
-        Math.abs(a.lng - b.lng) < LONG_THRESHOLD;
+    return Math.abs(a.lat - b.lat) < LAT_CLICK_GROUP_THRESHOLD &&
+        Math.abs(a.lng - b.lng) < LONG_CLICK_GROUP_THRESHOLD;
 }
 
 function createAllFalseMap(usluge: Usluga[]): isExpandedMap {
@@ -49,7 +48,7 @@ const MarkerPopupOrList = ({usluga, vidljiveUsluge}: Props) => {
           className="popup-usluga-header"
           onClick={() => toggleExpanded(u.id)}
         >
-          <span style={{ fontSize: 14 }}>{u.imeUstanove}</span>
+          <span style={{ fontSize: 14 }}>{u.nazivUsluge}</span>
           <i
             className={`fa fa-chevron-${isExpanded[u.id] ? "up" : "down"} category-icon`}
           />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import DropdownWithCheckboxes from "./DropdownWithCheckboxes";
-import MapComponent, { MAX_ZOOM } from "./mapComponent";
+import MapComponent from "./mapComponent";
 
 import "./CSS/App.css";
 import "./CSS/gore.css";
@@ -11,6 +11,7 @@ import ButonC from "./butonC";
 import { Usluga } from "./Usluge";
 import fetchData from "./supabase";
 import { Filter, makeBolniceIOrdinacijeFilter, makeDefaultFilter, makeHitnoFilter, makeLjekarneFilter, makeVeterinariFilter, QuickFilter, spadaLiUFilter } from "./Filter";
+import { MAX_ZOOM } from "./constants";
 
 // Return lower number to appear before in the search result
 // Return null if the search is no match
@@ -159,7 +160,7 @@ function App() {
         </div>
         <ScrollableMenu onQuickFilterClick={handleQuickFilterButtonClick} />
       </div>
-      { filteredMatches.length === 0 &&
+      { popisUsluga.length > 0 && filteredMatches.length === 0 &&
         <div style={{ position: "absolute", width: "100%", height: "100%", zIndex: 999, alignContent: "center", alignItems: "center", textAlign: "center" }}>
           <div style={{ marginTop: 64, color: "gray", fontWeight: "bolder", fontSize: 32, width: "100%", textAlign: "center" }}>
             Nema rezultata!
