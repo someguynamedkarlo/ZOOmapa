@@ -10,3 +10,11 @@ Spajanje redaka je isto dozvoljeno samo za spajanje kategorije i podkategorije.
 
 Prazni redci (kategorija i podkategorija mogu biti definirani) su dozvoljeni jer će ih kod za učitavanje JSON podataka zanemariti.
 
+## Tiles
+
+Tiles su potrebi za crtanje karte. Za testiranje se mogu koristiti javni besplati tile serveri.
+Ali za production to nije dozvoljeno nego se mora postaviti vlastiti server ili (ono što smo mi odabrali) ručno skinuti sve tileova (postoji skripta u drugom projektu za to) i staviti ih u `public/` directory.
+
+Prati [ovaj tutorial](https://switch2osm.org/serving-tiles/using-a-docker-container/) (postavljanje u dockeru je jednostavno) i tiles za Hrvatsku preuzmi [odavdje](https://download.geofabrik.de/europe.html)
+
+
