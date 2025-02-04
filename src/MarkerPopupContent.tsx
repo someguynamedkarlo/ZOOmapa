@@ -58,7 +58,9 @@ const MarkerPopupContent = ({usluga}: Props) => {
               />
             }
             <div>
-              <a onClick={() => openNavigation(location.lat, location.lng)}>
+              <a onClick={() => openNavigation(location.lat, location.lng)}
+                style={{ textDecoration: "underline" }}
+              >
                 Otvori navigaciju
               </a>
             </div>
