@@ -6,6 +6,15 @@ type Props = {
     usluga: Usluga,
 };
 
+const openNavigation = (lat: number, lng: number) => {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const url = isIOS
+    ? `https://maps.apple.com/?daddr=${lat},${lng}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+
+  window.open(url, "_blank");
+};
+
 const MarkerPopupContent = ({usluga}: Props) => {
     const location = usluga;
     const allWebsites = usluga.web.trim().split('\n').filter(w => w.length > 0);
@@ -48,6 +57,11 @@ const MarkerPopupContent = ({usluga}: Props) => {
                 text={location.adresa}
               />
             }
+            <div>
+              <a onClick={() => openNavigation(location.lat, location.lng)}>
+                Otvori navigaciju
+              </a>
+            </div>
             <br />
             <NewLineText 
               text={location.telefon || "Kontakt nije dostupan"}
