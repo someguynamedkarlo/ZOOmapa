@@ -8,7 +8,7 @@ export const LAT_CLICK_GROUP_THRESHOLD = 0.00001;
 export const LONG_CLICK_GROUP_THRESHOLD = 0.00001;
 
 // TODO: set to false
-export const DEBUG: boolean = true;
+export const DEBUG: boolean = false;
 export function debugConsoleLog(s: string) {
     if (DEBUG) console.log(s);
 }
