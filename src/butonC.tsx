@@ -27,10 +27,10 @@ const ButonC = ({oKartiPopupVisible, setOKartiPopupVisible}: Props) => {
       {oKartiPopupVisible && (
         <div className="popup">
           <div className="popup-content">
-            <span className="close" onClick={handleClosePopup}>
+            <div className="close" onClick={handleClosePopup}>
               &times;
-            </span>
-            <p>
+            </div>
+            <p className="popup-text-content">
               Interaktivnu mapu zdravstvenih usluga u Rijeci izradili su Luka
               Delak, Mihael Host, Karlo Perić, Vanja Petropoli, Adrian Skomerža, Nancy
               Škibola i Jakov Tomasić uz podršku Centra tehničke

@@ -207,7 +207,6 @@ svg {
 
 .popup-content {
   background-color: #181818;
-  padding: 20px;
   border-radius: 6px;
   width: 80%;
   margin-left: 10%;
@@ -217,15 +216,20 @@ svg {
 
 .popup-content p {
   font-size: 18px;
+  padding: 20px;
+  padding-top: 10px;
+  padding-bottom: 0px;
+  translate: 0 -16px;
 }
 
 .close {
-  position: absolute;
-  top: 20px;
-  right: 25px;
+  position: relative;
+  top: 3px;
+  right: 12px;
   font-size: 24px;
   font-weight: bold;
   cursor: pointer;
+  text-align: right;
 }
 
 .close:hover {

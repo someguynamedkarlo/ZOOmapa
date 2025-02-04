@@ -167,11 +167,12 @@ function App() {
           </div>
           <div style={{ marginTop: 16, color: "gray", fontWeight: "bolder", fontSize: 20, width: "100%", textAlign: "center" }}>
             Promijenite filter
+            <div style={{ marginTop: 12 }}>ili</div>
           </div>
           <div style={{
             display: "inline-block", paddingTop: 10, paddingBottom: 10, paddingLeft: 20, paddingRight: 20, 
             backgroundColor: "#383838", color: "white", borderRadius: 20, textAlign: "center", cursor: "pointer", border: "none",
-            marginTop: 24, fontSize: 18, fontWeight: "bold"
+            marginTop: 12, fontSize: 18, fontWeight: "bold"
           }}
             onClick={() => setSelectedFilters(makeDefaultFilter())}
           >
