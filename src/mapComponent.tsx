@@ -26,9 +26,6 @@ import { Kategorija, Usluga } from "./Usluge";
 import MarkerPopupOrList from "./MarkerPopupOrList";
 import { debugConsoleLogStringify, DEFAULT_ZOOM, MAX_TILE_ZOOM, MAX_ZOOM, MIN_ZOOM } from "./constants";
 
-// TODO: This shouldn't be here for safety reasons, but this is only a testing temporary key so I'll allow it
-const apiKey = "b2c80386-e678-4ba5-b8c7-6a2e8829e987";
-
 function getIconUrl(u: Usluga): string {
   switch (u.kategorija) {
     case Kategorija.ZDRAVSTVENO_OSIGURANJE: return ostaleusluge;
@@ -118,11 +115,10 @@ const MapComponent = ({ mapCenter, data, mapRef, idToOpenPopup, onMapClick, chil
     >
       <MapClickHandler />
       <TileLayer
-        // TODO: use local tiles intead of stadiamaps
-        url={`https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}{r}.png?api_key=${apiKey}`}
-        // url={`/tiles/{z}/{x}/tile_{z}_{x}_{y}.png`}
+        url={`/tiles/{z}/{x}/tile_{z}_{x}_{y}.png`}
         attribution="&copy; OpenStreetMap contributors"
         maxNativeZoom={MAX_TILE_ZOOM} // Load tiles only up to this zoom level
+        minZoom={MIN_ZOOM}       // Allow users to zoom further
         maxZoom={MAX_ZOOM}       // Allow users to zoom further
       />
       <MarkerClusterGroup
