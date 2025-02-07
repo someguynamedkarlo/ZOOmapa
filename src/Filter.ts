@@ -62,9 +62,11 @@ export function makeVeterinariFilter(): Filter {
 }
 
 export function spadaLiUFilter(u: Usluga, f: Filter): boolean {
-  if (!f.kategorije.includes(u.kategorija)) return false;
+  const sveKategorije = [u.kategorija, ...u.ostaleKategorije];
+  if (sveKategorije.find(kat => f.kategorije.includes(kat)) === undefined) return false;
   else if (u.javnoIliPrivatno !== null && !f.vrstaUstanove.includes(u.javnoIliPrivatno)) return false;
   else if (u.kategorijaKorisnika !== null && !f.kategorijaKorisnika.includes(u.kategorijaKorisnika)) return false;
   else if (u.trosakKorisnika !== null && !f.trosakKorisnika.includes(u.trosakKorisnika)) return false;
+
   return true;
 }

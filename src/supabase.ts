@@ -119,6 +119,7 @@ const fetchData = async (): Promise<Usluga[]> => {
         converted = {
           id: index + 1,
           kategorija: kategorijaEnum,
+          ostaleKategorije: [],
           imeUstanove: conform(u.USTANOVA),
           javnoIliPrivatno: tipVlasnika,
           nazivUsluge: conform(u["NAZIV USLUGE"]),
@@ -148,6 +149,11 @@ const fetchData = async (): Promise<Usluga[]> => {
           // Usluge s istim lokacijama nisu duplikati. Koristi sljedecu liniju za debug i analizu podataka koje imaju slicnu lokaciju
           // || (Math.abs(converted.lat - u2.lat) < 0.00001 && Math.abs(converted.lng - u2.lng) < 0.00001)
         );
+        
+        for (const d of duplikati) {
+          d.ostaleKategorije.push(converted.kategorija);
+          converted.ostaleKategorije = [...converted.ostaleKategorije, ...d.ostaleKategorije, d.kategorija];
+        }
         
         if (duplikati.length > 0) {
           // Za sada cu pustiti duplikate u podacima i samo ih ovako maknuti

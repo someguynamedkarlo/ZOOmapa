@@ -23,17 +23,18 @@ function searchResultSortNumber(usluga: Usluga, searchText: string): number | nu
   else if (croatiaStringIncludes(usluga.nazivUsluge, search)) return 2;
   else if (croatiaStringIncludes(usluga.opisUsluge, search)) return 3;
   else if (croatiaStringIncludes(kategorijaToString(usluga.kategorija), search)) return 4;
-  else if (croatiaStringIncludes(usluga.adresa, search)) return 5;
-  else if (croatiaStringIncludes(usluga.web, search)) return 6;
-  else if (croatiaStringIncludes(usluga.dodatneInfo, search)) return 7;
-  else if (croatiaStringIncludes(usluga.telefon, search)) return 8;
-  else if (croatiaStringIncludes(usluga.email, search)) return 9;
+  else if (usluga.ostaleKategorije.find(kat => croatiaStringIncludes(kategorijaToString(kat), search)) !== undefined) return 5;
+  else if (croatiaStringIncludes(usluga.adresa, search)) return 6;
+  else if (croatiaStringIncludes(usluga.web, search)) return 7;
+  else if (croatiaStringIncludes(usluga.dodatneInfo, search)) return 8;
+  else if (croatiaStringIncludes(usluga.telefon, search)) return 9;
+  else if (croatiaStringIncludes(usluga.email, search)) return 10;
   else if (usluga.javnoIliPrivatno !== null && 
-    croatiaStringIncludes(tipVlasnikaToString(usluga.javnoIliPrivatno), search)) return 10;
+    croatiaStringIncludes(tipVlasnikaToString(usluga.javnoIliPrivatno), search)) return 11;
   else if (usluga.kategorijaKorisnika !== null && 
-    croatiaStringIncludes(kategorijaKorisnikaToString(usluga.kategorijaKorisnika), search)) return 11;
+    croatiaStringIncludes(kategorijaKorisnikaToString(usluga.kategorijaKorisnika), search)) return 12;
   else if (usluga.trosakKorisnika !== null && 
-    croatiaStringIncludes(trosakKorisnikaToString(usluga.trosakKorisnika), search)) return 12;
+    croatiaStringIncludes(trosakKorisnikaToString(usluga.trosakKorisnika), search)) return 13;
   else return null
 }
 

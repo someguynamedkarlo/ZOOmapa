@@ -127,4 +127,7 @@ export type Usluga = {
   email: string;
   web: string;
   dodatneInfo: string;
+  // ostaleKategorije je fix za duplicirane redove - spoji im sve kategorije tako da search i filter rade kako treba
+  // Moze sadrzavati duplikate
+  ostaleKategorije: Kategorija[];
 };
