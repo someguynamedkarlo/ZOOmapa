@@ -26,7 +26,7 @@ export function quickFilterToString(qf: QuickFilter): string {
 export function makeDefaultFilter(): Filter {
   return {
     kategorije: AllCategories,
-    vrstaUstanove: [TipVlasnikaUsluge.DRZAVA],
+    vrstaUstanove: AllTipVlasnikaUsluge,
     kategorijaKorisnika: AllKategorijaKorisnika,
     trosakKorisnika: AllTrosak,
   };
