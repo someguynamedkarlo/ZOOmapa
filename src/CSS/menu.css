@@ -14,7 +14,7 @@
 .dropdown-button {
   padding: 8px 12px;
   background-color: #0e0e0e;
-  font-size: 14px;
+  font-size: 15px;
   color: white;
   cursor: pointer;
   width: 350px;
@@ -160,7 +160,6 @@
   }
   .dropdown-button {
     background-color: #0e0e0e;
-    font-size: 14px;
     color: white;
     cursor: pointer;
     width: auto;

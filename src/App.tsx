@@ -174,22 +174,28 @@ function App() {
         <ScrollableMenu onQuickFilterClick={handleQuickFilterButtonClick} />
       </div>
       { popisUsluga.length > 0 && filteredMatches.length === 0 &&
-        <div style={{ position: "absolute", width: "100%", height: "100%", zIndex: 999, alignContent: "center", alignItems: "center", textAlign: "center" }}>
-          <div style={{ marginTop: 64, color: "gray", fontWeight: "bolder", fontSize: 32, width: "100%", textAlign: "center" }}>
+        <div style={{
+          position: "absolute", width: "100%", height: "100%", zIndex: 999, alignContent: "center",
+          alignItems: "center", textAlign: "center", color: "#555",
+          // textShadow: "#888 1px 0 10px",
+          textShadow: "1px 1px 2px #888, 0 0 1em #888, 0 0 0.2em #888",
+          }}>
+          <div style={{ marginTop: 64, fontWeight: "bolder", fontSize: 32, width: "100%", textAlign: "center" }}>
             Nema rezultata!
           </div>
-          <div style={{ marginTop: 16, color: "gray", fontWeight: "bolder", fontSize: 20, width: "100%", textAlign: "center" }}>
+          <div style={{ marginTop: 16, fontWeight: "bolder", fontSize: 20, width: "100%", textAlign: "center" }}>
             Promijenite filter
             <div style={{ marginTop: 12 }}>ili</div>
           </div>
           <div style={{
             display: "inline-block", paddingTop: 10, paddingBottom: 10, paddingLeft: 20, paddingRight: 20, 
             backgroundColor: "#383838", color: "white", borderRadius: 20, textAlign: "center", cursor: "pointer", border: "none",
-            marginTop: 12, fontSize: 18, fontWeight: "bold"
+            marginTop: 12, fontSize: 18, fontWeight: "bold",
+            textShadow: "none"
           }}
             onClick={() => setSelectedFilters(makeDefaultFilter())}
           >
-            Restiraj filter
+            Resetiraj filter
           </div>
         </div>
       }
