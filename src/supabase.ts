@@ -86,7 +86,7 @@ function createTrosakKorisnika(t: string): Trosak | null {
 
 const fetchData = async (): Promise<Usluga[]> => {
   try {
-    const response = await fetch("/BAZA4.json");
+    const response = await fetch("/DATA.json");
     const data = await response.json() as any[];
     
     let previousKategorija: string = "";
