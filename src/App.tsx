@@ -179,7 +179,9 @@ function App() {
           alignItems: "center", textAlign: "center", color: "#555",
           // textShadow: "#888 1px 0 10px",
           textShadow: "1px 1px 2px #888, 0 0 1em #888, 0 0 0.2em #888",
-          }}>
+          }}
+          onClick={onEmptyMapClick}
+          >
           <div style={{ marginTop: 64, fontWeight: "bolder", fontSize: 32, width: "100%", textAlign: "center" }}>
             Nema rezultata!
           </div>
