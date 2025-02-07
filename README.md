@@ -17,4 +17,6 @@ Ali za production to nije dozvoljeno nego se mora postaviti vlastiti server ili 
 
 Prati [ovaj tutorial](https://switch2osm.org/serving-tiles/using-a-docker-container/) (postavljanje u dockeru je jednostavno) i tiles za Hrvatsku preuzmi [odavdje](https://download.geofabrik.de/europe.html)
 
+Vidi file `all_tiles.txt` gdje su svi skinuti tiles i njihova struktura u direktorijima.
+
 
