@@ -20,7 +20,7 @@ function createCategory(kategorija: string, podkategorija: string): Kategorija |
     case "HITNA MEDICINSKA POMOĆ": return Kategorija.HITNA_POMOC;
     case "BOLNICE": return Kategorija.BOLNICE;
     case "ZAŠTITA MENTALNOG ZDRAVLJA I SUZBIJANJE OVISNOSTI": return Kategorija.MENTALNO_ZDRAVLJE;
-    case "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE": return Kategorija.ZDRAVLJE_ZENA;
+    case "ZDRAVLJE ŽENA I REPRODUKTIVNO ZDRAVLJE; PODRŠKA MAJKAMA": return Kategorija.ZDRAVLJE_ZENA;
     case "PODRŠKA OBOLJELIMA I REHABILITACIJA": return Kategorija.REHABILITACIJA;
     case "STOMATOLOZI": return Kategorija.STOMATOLOZI;
     case "LJEKARNE": {
@@ -38,7 +38,10 @@ function createCategory(kategorija: string, podkategorija: string): Kategorija |
   return null;
 }
 
-function createTipVlasnikaUsluge(s: string): TipVlasnikaUsluge | null {
+function createTipVlasnikaUsluge(s: string | undefined): TipVlasnikaUsluge | null {
+  if (s === undefined) {
+    return null;
+  }
   switch (conform(s)) {
     case "Javna (državna) ustanova": return TipVlasnikaUsluge.DRZAVA;
     case "Privatna ustanova": return TipVlasnikaUsluge.PRIVATNO;
@@ -47,7 +50,10 @@ function createTipVlasnikaUsluge(s: string): TipVlasnikaUsluge | null {
   return null;
 }
 
-function createKategorijaKorisnika(k: string): KategorijaKorisnika | null {
+function createKategorijaKorisnika(k: string | undefined): KategorijaKorisnika | null {
+  if (k === undefined) {
+    return null;
+  }
   switch (conform(k)) {
     case "Sve dobne skupine": return KategorijaKorisnika.SVI;
     case "Mlade punoljetne osobe": return KategorijaKorisnika.MLADI_PUNOLJETNI;
@@ -72,6 +78,7 @@ function createTrosakKorisnika(t: string): Trosak | null {
     case "Uglavnom besplatno za korisnika - pojedine usluge se ostvaruju uz nadoplatu": return Trosak.UGLAVNOM_BESPLATNO;
     case "Ovisno o vrsti usluge": return Trosak.OVISI_O_USLUZI;
     case "Ovisno o vrsti lijeka": return Trosak.OVISI_O_LIJEKU;
+    case "": return null;
   }
   debugConsoleLog("createTrosakKorisnika error " + t);
   return null;
@@ -135,14 +142,20 @@ const fetchData = async (): Promise<Usluga[]> => {
       previousKategorija = kategorija;
       previousPodkategorija = podkategorija;
       
-      const duplikati = result.filter(u2 => {
-        u2.imeUstanove === u.imeUstanove && u2.nazivUsluge === u.nazivUsluge
-      });
-      
-      if (duplikati.length > 0) {
-        debugConsoleLogStringify("Duplikat! ", u);
-      } else if (converted !== null) {
-        result.push(converted)
+      if (converted !== null) {
+        const duplikati = result.filter(u2 => 
+          (u2.imeUstanove === converted.imeUstanove && u2.nazivUsluge === converted.nazivUsluge)
+          // Usluge s istim lokacijama nisu duplikati. Koristi sljedecu liniju za debug i analizu podataka koje imaju slicnu lokaciju
+          // || (Math.abs(converted.lat - u2.lat) < 0.00001 && Math.abs(converted.lng - u2.lng) < 0.00001)
+        );
+        
+        if (duplikati.length > 0) {
+          // Za sada cu pustiti duplikate u podacima i samo ih ovako maknuti
+          // Necu maknuti usluge s istim lokacijama jer to nisu duplikati!
+          debugConsoleLogStringify("Duplikat! ", u);
+        } else {
+          result.push(converted)
+        }
       }
     })
     
